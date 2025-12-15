@@ -40,22 +40,29 @@ function getTargetDescription(type: TargetType, config: unknown): { label: strin
 		case 'postgres': {
 			const c = config as PostgresConfig
 			// Parse connection string to show host without password
-			try {
-				const url = new URL(c.connectionString)
-				return { label: 'Database', value: `${url.hostname}:${url.port || 5432}${url.pathname}` }
-			} catch {
-				return { label: 'Database', value: '(connection string)' }
+			// postgres://user:pass@host:port/database
+			const connStr = c.connectionString ?? ''
+			const match = connStr.match(/@([^:/]+)(?::(\d+))?(?:\/([^?]+))?/)
+			if (match) {
+				const host = match[1]
+				const port = match[2] ?? '5432'
+				const db = match[3] ?? ''
+				return { label: 'Database', value: `${host}:${port}${db ? `/${db}` : ''}` }
 			}
+			return { label: 'Database', value: connStr ? '(configured)' : '(not configured)' }
 		}
 		case 'redis': {
 			const c = config as RedisConfig
 			// Parse URL to show host without password
-			try {
-				const url = new URL(c.url ?? 'redis://localhost:6379')
-				return { label: 'Redis', value: `${url.hostname}:${url.port || 6379}` }
-			} catch {
-				return { label: 'Redis', value: c.url ?? 'localhost:6379' }
+			// redis://user:pass@host:port
+			const redisUrl = c.url ?? 'redis://localhost:6379'
+			const match = redisUrl.match(/:\/\/(?:[^@]+@)?([^:/]+)(?::(\d+))?/)
+			if (match) {
+				const host = match[1]
+				const port = match[2] ?? '6379'
+				return { label: 'Redis', value: `${host}:${port}` }
 			}
+			return { label: 'Redis', value: 'localhost:6379' }
 		}
 		default:
 			return { label: 'Target', value: 'unknown' }
