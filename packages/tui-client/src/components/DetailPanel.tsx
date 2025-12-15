@@ -1,10 +1,66 @@
 import { Box, Text } from 'ink'
-import type { HttpConfig, TcpConfig } from '@downtime/shared'
+import type {
+	HttpConfig,
+	TcpConfig,
+	IcmpConfig,
+	DnsConfig,
+	DockerConfig,
+	PostgresConfig,
+	RedisConfig,
+	TargetType,
+} from '@downtime/shared'
 import { useAppStore } from '../stores/app'
 import { useLoadSummary, useLoadMetrics } from '../hooks/useData'
 import { useTerminalSize } from '../hooks/useTerminalSize'
 import { StatusIndicator } from './StatusIndicator'
 import { UptimeChart } from './UptimeChart'
+
+function getTargetDescription(type: TargetType, config: unknown): { label: string; value: string } {
+	switch (type) {
+		case 'http': {
+			const c = config as HttpConfig
+			return { label: 'URL', value: c.url }
+		}
+		case 'tcp': {
+			const c = config as TcpConfig
+			return { label: 'Host', value: `${c.host}:${c.port}` }
+		}
+		case 'icmp': {
+			const c = config as IcmpConfig
+			return { label: 'Host', value: c.host }
+		}
+		case 'dns': {
+			const c = config as DnsConfig
+			return { label: 'Domain', value: `${c.host} (${c.recordType ?? 'A'})` }
+		}
+		case 'docker': {
+			const c = config as DockerConfig
+			return { label: 'Container', value: c.containerName ?? c.containerId ?? 'unknown' }
+		}
+		case 'postgres': {
+			const c = config as PostgresConfig
+			// Parse connection string to show host without password
+			try {
+				const url = new URL(c.connectionString)
+				return { label: 'Database', value: `${url.hostname}:${url.port || 5432}${url.pathname}` }
+			} catch {
+				return { label: 'Database', value: '(connection string)' }
+			}
+		}
+		case 'redis': {
+			const c = config as RedisConfig
+			// Parse URL to show host without password
+			try {
+				const url = new URL(c.url ?? 'redis://localhost:6379')
+				return { label: 'Redis', value: `${url.hostname}:${url.port || 6379}` }
+			} catch {
+				return { label: 'Redis', value: c.url ?? 'localhost:6379' }
+			}
+		}
+		default:
+			return { label: 'Target', value: 'unknown' }
+	}
+}
 
 export function DetailPanel() {
 	const targets = useAppStore((state) => state.targets)
@@ -29,8 +85,7 @@ export function DetailPanel() {
 		)
 	}
 
-	const config = target.config as HttpConfig | TcpConfig
-	const url = 'url' in config ? config.url : `${config.host}:${config.port}`
+	const { label, value } = getTargetDescription(target.type, target.config)
 
 	return (
 		<Box flexDirection="column" padding={1}>
@@ -40,8 +95,8 @@ export function DetailPanel() {
 			</Box>
 
 			<Box marginBottom={1}>
-				<Text dimColor>URL: </Text>
-				<Text>{url}</Text>
+				<Text dimColor>{label}: </Text>
+				<Text>{value}</Text>
 			</Box>
 
 			<Box marginBottom={1}>
