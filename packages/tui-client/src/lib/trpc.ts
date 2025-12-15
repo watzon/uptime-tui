@@ -1,5 +1,6 @@
 import { createTRPCClient, createWSClient, httpLink, splitLink, wsLink } from '@trpc/client'
 import type { AppRouter } from '@downtime/server'
+import superjson from 'superjson'
 import { env } from './env'
 import { log } from './logger'
 
@@ -23,12 +24,13 @@ export const trpc = createTRPCClient<AppRouter>({
 	links: [
 		splitLink({
 			condition: (op) => op.type === 'subscription',
-			true: wsLink({ client: wsClient }),
+			true: wsLink({ client: wsClient, transformer: superjson }),
 			false: httpLink({
 				url: env.SERVER_URL,
 				headers: () => ({
 					'x-api-key': env.API_KEY,
 				}),
+				transformer: superjson,
 			}),
 		}),
 	],

@@ -58,38 +58,53 @@ export const targetConfigSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('redis'), ...redisConfigSchema.shape }),
 ])
 
-export const createTargetInputSchema = z.object({
-	name: z.string().min(1).max(100),
-	type: targetTypeSchema,
-	config: z.union([
-		httpConfigSchema,
-		tcpConfigSchema,
-		icmpConfigSchema,
-		dnsConfigSchema,
-		dockerConfigBaseSchema,
-		postgresConfigSchema,
-		redisConfigSchema,
-	]),
-	intervalMs: z.number().int().min(5000).max(3600000).optional().default(60000),
-	timeoutMs: z.number().int().min(1000).max(60000).optional().default(5000),
-	enabled: z.boolean().optional().default(true),
-	failureThreshold: z.number().int().min(1).max(10).optional().default(2),
-})
+// Helper to get the correct config schema for a target type
+const configSchemaMap = {
+	http: httpConfigSchema,
+	tcp: tcpConfigSchema,
+	icmp: icmpConfigSchema,
+	dns: dnsConfigSchema,
+	docker: dockerConfigBaseSchema,
+	postgres: postgresConfigSchema,
+	redis: redisConfigSchema,
+} as const
 
+export const createTargetInputSchema = z
+	.object({
+		name: z.string().min(1).max(100),
+		type: targetTypeSchema,
+		config: z.record(z.unknown()), // Accept any object initially
+		intervalMs: z.number().int().min(5000).max(3600000).optional().default(60000),
+		timeoutMs: z.number().int().min(1000).max(60000).optional().default(5000),
+		enabled: z.boolean().optional().default(true),
+		failureThreshold: z.number().int().min(1).max(10).optional().default(2),
+	})
+	.superRefine((data, ctx) => {
+		const schema = configSchemaMap[data.type]
+		const result = schema.safeParse(data.config)
+		if (!result.success) {
+			for (const issue of result.error.issues) {
+				ctx.addIssue({
+					...issue,
+					path: ['config', ...issue.path],
+				})
+			}
+		}
+	})
+	.transform((data) => {
+		// Re-parse config with the correct schema to apply defaults
+		const schema = configSchemaMap[data.type]
+		return {
+			...data,
+			config: schema.parse(data.config),
+		}
+	})
+
+// For updates, we accept any config object - server validates against target's type
 export const updateTargetInputSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string().min(1).max(100).optional(),
-	config: z
-		.union([
-			httpConfigSchema,
-			tcpConfigSchema,
-			icmpConfigSchema,
-			dnsConfigSchema,
-			dockerConfigBaseSchema,
-			postgresConfigSchema,
-			redisConfigSchema,
-		])
-		.optional(),
+	config: z.record(z.unknown()).optional(),
 	intervalMs: z.number().int().min(5000).max(3600000).optional(),
 	timeoutMs: z.number().int().min(1000).max(60000).optional(),
 	enabled: z.boolean().optional(),

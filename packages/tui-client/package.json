@@ -30,6 +30,7 @@
     "@types/bun": "latest",
     "@types/react": "^18.3.14",
     "@types/ws": "^8.5.13",
+    "react-devtools-core": "^7.0.1",
     "typescript": "^5.7.2"
   }
 }
