@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const targetTypeSchema = z.enum(['http', 'tcp', 'icmp'])
+export const targetTypeSchema = z.enum(['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
 export const targetStatusSchema = z.enum(['up', 'down', 'degraded', 'unknown'])
 export const eventTypeSchema = z.enum(['up', 'down', 'created', 'updated', 'deleted'])
 
@@ -18,18 +18,58 @@ export const tcpConfigSchema = z.object({
 
 export const icmpConfigSchema = z.object({
 	host: z.string().min(1),
+	packetCount: z.number().int().min(1).max(10).optional().default(1),
+})
+
+export const dnsConfigSchema = z.object({
+	host: z.string().min(1),
+	recordType: z.enum(['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS']).optional().default('A'),
+	nameserver: z.string().optional(),
+	expectedValue: z.string().optional(),
+})
+
+export const dockerConfigBaseSchema = z.object({
+	containerId: z.string().optional(),
+	containerName: z.string().optional(),
+	socketPath: z.string().optional().default('/var/run/docker.sock'),
+})
+
+export const dockerConfigSchema = dockerConfigBaseSchema.refine(
+	(data) => data.containerId || data.containerName,
+	{ message: 'Either containerId or containerName is required' }
+)
+
+export const postgresConfigSchema = z.object({
+	connectionString: z.string().min(1),
+	query: z.string().optional().default('SELECT 1'),
+})
+
+export const redisConfigSchema = z.object({
+	url: z.string().optional().default('redis://localhost:6379'),
 })
 
 export const targetConfigSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('http'), ...httpConfigSchema.shape }),
 	z.object({ type: z.literal('tcp'), ...tcpConfigSchema.shape }),
 	z.object({ type: z.literal('icmp'), ...icmpConfigSchema.shape }),
+	z.object({ type: z.literal('dns'), ...dnsConfigSchema.shape }),
+	z.object({ type: z.literal('docker'), ...dockerConfigBaseSchema.shape }),
+	z.object({ type: z.literal('postgres'), ...postgresConfigSchema.shape }),
+	z.object({ type: z.literal('redis'), ...redisConfigSchema.shape }),
 ])
 
 export const createTargetInputSchema = z.object({
 	name: z.string().min(1).max(100),
 	type: targetTypeSchema,
-	config: z.union([httpConfigSchema, tcpConfigSchema, icmpConfigSchema]),
+	config: z.union([
+		httpConfigSchema,
+		tcpConfigSchema,
+		icmpConfigSchema,
+		dnsConfigSchema,
+		dockerConfigBaseSchema,
+		postgresConfigSchema,
+		redisConfigSchema,
+	]),
 	intervalMs: z.number().int().min(5000).max(3600000).optional().default(60000),
 	timeoutMs: z.number().int().min(1000).max(60000).optional().default(5000),
 	enabled: z.boolean().optional().default(true),
@@ -39,7 +79,17 @@ export const createTargetInputSchema = z.object({
 export const updateTargetInputSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string().min(1).max(100).optional(),
-	config: z.union([httpConfigSchema, tcpConfigSchema, icmpConfigSchema]).optional(),
+	config: z
+		.union([
+			httpConfigSchema,
+			tcpConfigSchema,
+			icmpConfigSchema,
+			dnsConfigSchema,
+			dockerConfigBaseSchema,
+			postgresConfigSchema,
+			redisConfigSchema,
+		])
+		.optional(),
 	intervalMs: z.number().int().min(5000).max(3600000).optional(),
 	timeoutMs: z.number().int().min(1000).max(60000).optional(),
 	enabled: z.boolean().optional(),

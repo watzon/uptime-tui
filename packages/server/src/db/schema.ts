@@ -10,7 +10,7 @@ import {
 	uuid,
 } from 'drizzle-orm/pg-core'
 
-export const targetTypeEnum = pgEnum('target_type', ['http', 'tcp', 'icmp'])
+export const targetTypeEnum = pgEnum('target_type', ['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
 export const targetStatusEnum = pgEnum('target_status', ['up', 'down', 'degraded', 'unknown'])
 export const eventTypeEnum = pgEnum('event_type', ['up', 'down', 'created', 'updated', 'deleted'])
 

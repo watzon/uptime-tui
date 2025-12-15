@@ -1,4 +1,4 @@
-export type TargetType = 'http' | 'tcp' | 'icmp'
+export type TargetType = 'http' | 'tcp' | 'icmp' | 'dns' | 'docker' | 'postgres' | 'redis'
 export type TargetStatus = 'up' | 'down' | 'degraded' | 'unknown'
 export type EventType = 'up' | 'down' | 'created' | 'updated' | 'deleted'
 
@@ -16,9 +16,39 @@ export interface TcpConfig {
 
 export interface IcmpConfig {
 	host: string
+	packetCount?: number
 }
 
-export type TargetConfig = HttpConfig | TcpConfig | IcmpConfig
+export interface DnsConfig {
+	host: string
+	recordType?: 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS'
+	nameserver?: string
+	expectedValue?: string
+}
+
+export interface DockerConfig {
+	containerId?: string
+	containerName?: string
+	socketPath?: string
+}
+
+export interface PostgresConfig {
+	connectionString: string
+	query?: string
+}
+
+export interface RedisConfig {
+	url?: string
+}
+
+export type TargetConfig =
+	| HttpConfig
+	| TcpConfig
+	| IcmpConfig
+	| DnsConfig
+	| DockerConfig
+	| PostgresConfig
+	| RedisConfig
 
 export interface Target {
 	id: string

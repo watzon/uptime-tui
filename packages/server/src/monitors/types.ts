@@ -1,5 +1,16 @@
-import type { HttpConfig, IcmpConfig, MonitorResult, TcpConfig } from '@downtime/shared'
+import type {
+	DnsConfig,
+	DockerConfig,
+	HttpConfig,
+	IcmpConfig,
+	MonitorResult,
+	PostgresConfig,
+	RedisConfig,
+	TcpConfig,
+} from '@downtime/shared'
 
-export interface Monitor<T = HttpConfig | TcpConfig | IcmpConfig> {
+export interface Monitor<
+	T = HttpConfig | TcpConfig | IcmpConfig | DnsConfig | DockerConfig | PostgresConfig | RedisConfig,
+> {
 	execute(config: T, timeoutMs: number): Promise<MonitorResult>
 }
