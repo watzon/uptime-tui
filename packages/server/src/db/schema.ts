@@ -96,6 +96,34 @@ export const webhookConfigs = pgTable(
 	(table) => [index('webhook_configs_owner_id_idx').on(table.ownerId)],
 )
 
+export const deliveryStatusEnum = pgEnum('delivery_status', ['pending', 'success', 'failed'])
+
+export const webhookDeliveries = pgTable(
+	'webhook_deliveries',
+	{
+		id: uuid('id').defaultRandom().primaryKey(),
+		webhookId: uuid('webhook_id')
+			.notNull()
+			.references(() => webhookConfigs.id, { onDelete: 'cascade' }),
+		eventId: uuid('event_id')
+			.notNull()
+			.references(() => events.id, { onDelete: 'cascade' }),
+		status: deliveryStatusEnum('status').notNull().default('pending'),
+		attempts: integer('attempts').notNull().default(0),
+		lastAttemptAt: timestamp('last_attempt_at', { withTimezone: true }),
+		nextRetryAt: timestamp('next_retry_at', { withTimezone: true }),
+		responseCode: integer('response_code'),
+		responseBody: text('response_body'),
+		responseTimeMs: integer('response_time_ms'),
+		errorMessage: text('error_message'),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+	},
+	(table) => [
+		index('webhook_deliveries_webhook_id_idx').on(table.webhookId),
+		index('webhook_deliveries_status_retry_idx').on(table.status, table.nextRetryAt),
+	],
+)
+
 export const targetCurrentStatus = pgTable(
 	'target_current_status',
 	{
@@ -119,5 +147,7 @@ export type EventRow = typeof events.$inferSelect
 export type NewEventRow = typeof events.$inferInsert
 export type WebhookConfigRow = typeof webhookConfigs.$inferSelect
 export type NewWebhookConfigRow = typeof webhookConfigs.$inferInsert
+export type WebhookDeliveryRow = typeof webhookDeliveries.$inferSelect
+export type NewWebhookDeliveryRow = typeof webhookDeliveries.$inferInsert
 export type TargetStatusRow = typeof targetCurrentStatus.$inferSelect
 export type NewTargetStatusRow = typeof targetCurrentStatus.$inferInsert
