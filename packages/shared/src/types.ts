@@ -110,6 +110,28 @@ export interface WebhookConfig {
 	updatedAt: Date
 }
 
+export type DeliveryStatus = 'pending' | 'success' | 'failed'
+
+export interface WebhookDelivery {
+	id: string
+	webhookId: string
+	eventId: string
+	status: DeliveryStatus
+	attempts: number
+	lastAttemptAt: Date | null
+	nextRetryAt: Date | null
+	responseCode: number | null
+	responseBody: string | null
+	responseTimeMs: number | null
+	errorMessage: string | null
+	createdAt: Date
+}
+
+export interface WebhookDeliveryWithDetails extends WebhookDelivery {
+	event: Event
+	targetName: string
+}
+
 export interface UptimeSummary {
 	targetId: string
 	period: '1h' | '24h' | '7d' | '30d'
