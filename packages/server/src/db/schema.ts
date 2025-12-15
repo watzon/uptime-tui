@@ -12,7 +12,19 @@ import {
 
 export const targetTypeEnum = pgEnum('target_type', ['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
 export const targetStatusEnum = pgEnum('target_status', ['up', 'down', 'degraded', 'unknown'])
-export const eventTypeEnum = pgEnum('event_type', ['up', 'down', 'created', 'updated', 'deleted'])
+export const eventTypeEnum = pgEnum('event_type', [
+	'up',
+	'down',
+	'degraded',
+	'timeout',
+	'error',
+	'paused',
+	'resumed',
+	'certificate_expiring',
+	'created',
+	'updated',
+	'deleted',
+])
 
 export const targets = pgTable(
 	'targets',
