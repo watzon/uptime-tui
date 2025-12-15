@@ -2,7 +2,19 @@ import { z } from 'zod'
 
 export const targetTypeSchema = z.enum(['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
 export const targetStatusSchema = z.enum(['up', 'down', 'degraded', 'unknown'])
-export const eventTypeSchema = z.enum(['up', 'down', 'created', 'updated', 'deleted'])
+export const eventTypeSchema = z.enum([
+	'up',
+	'down',
+	'degraded',
+	'timeout',
+	'error',
+	'paused',
+	'resumed',
+	'certificate_expiring',
+	'created',
+	'updated',
+	'deleted',
+])
 
 export const httpConfigSchema = z.object({
 	url: z.string().url(),

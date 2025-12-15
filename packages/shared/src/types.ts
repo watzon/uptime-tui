@@ -1,6 +1,17 @@
 export type TargetType = 'http' | 'tcp' | 'icmp' | 'dns' | 'docker' | 'postgres' | 'redis'
 export type TargetStatus = 'up' | 'down' | 'degraded' | 'unknown'
-export type EventType = 'up' | 'down' | 'created' | 'updated' | 'deleted'
+export type EventType =
+	| 'up'
+	| 'down'
+	| 'degraded'
+	| 'timeout'
+	| 'error'
+	| 'paused'
+	| 'resumed'
+	| 'certificate_expiring'
+	| 'created'
+	| 'updated'
+	| 'deleted'
 
 export interface HttpConfig {
 	url: string
