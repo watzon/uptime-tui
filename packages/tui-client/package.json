@@ -1,0 +1,35 @@
+{
+  "name": "@downtime/tui-client",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "downtime": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun --watch src/index.tsx",
+    "build": "bun build src/index.tsx --outdir dist --target bun",
+    "start": "bun dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@downtime/server": "workspace:*",
+    "@downtime/shared": "workspace:*",
+    "@trpc/client": "^11.0.0-rc.682",
+    "asciichart": "^1.5.25",
+    "ink": "^5.1.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^18.3.1",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/asciichart": "^1.5.8",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.14",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.2"
+  }
+}
