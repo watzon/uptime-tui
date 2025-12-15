@@ -5,6 +5,7 @@ interface UptimeChartProps {
 	metrics: Metric[]
 	width?: number
 	height?: number
+	loading?: boolean
 }
 
 function getStatusColor(status: TargetStatus): string {
@@ -39,7 +40,15 @@ function getResponseTimeColor(ms: number): string {
 	return 'green'
 }
 
-export function UptimeChart({ metrics, width = 40, height = 6 }: UptimeChartProps) {
+export function UptimeChart({ metrics, width = 40, height = 6, loading = false }: UptimeChartProps) {
+	if (loading) {
+		return (
+			<Box flexDirection="column">
+				<Text color="cyan">Loading metrics...</Text>
+			</Box>
+		)
+	}
+
 	if (metrics.length === 0) {
 		return (
 			<Box flexDirection="column">

@@ -79,7 +79,7 @@ export function useLoadSummary(targetId: string | null) {
 }
 
 export function useLoadMetrics(targetId: string | null) {
-	const { setSelectedTargetMetrics } = useAppStore()
+	const { setSelectedTargetMetrics, setMetricsLoading } = useAppStore()
 
 	useEffect(() => {
 		if (!targetId) {
@@ -87,10 +87,16 @@ export function useLoadMetrics(targetId: string | null) {
 			return
 		}
 
+		// Set loading state (metrics will be set to loading: false when data arrives)
+		setMetricsLoading(true)
+		log('Loading metrics for target:', targetId)
+
 		async function load() {
 			try {
 				const now = new Date()
 				const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
+
+				log('Fetching metrics from', oneHourAgo.toISOString(), 'to', now.toISOString())
 
 				const metrics = await trpc.metrics.query.query({
 					targetId: targetId!,
@@ -100,12 +106,16 @@ export function useLoadMetrics(targetId: string | null) {
 					limit: 100,
 				})
 
+				log('Received', metrics.length, 'metrics for target', targetId)
+
+				// setSelectedTargetMetrics also sets metricsLoading to false
 				setSelectedTargetMetrics(metrics.map((m) => parseMetric(m as unknown as Record<string, unknown>)))
 			} catch (error) {
 				log('Failed to load metrics:', error)
+				setMetricsLoading(false)
 			}
 		}
 
 		load()
-	}, [targetId, setSelectedTargetMetrics])
+	}, [targetId, setSelectedTargetMetrics, setMetricsLoading])
 }

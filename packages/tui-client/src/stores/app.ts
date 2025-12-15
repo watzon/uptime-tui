@@ -15,6 +15,7 @@ interface AppState {
 
 	selectedTargetSummary: UptimeSummary | null
 	selectedTargetMetrics: Metric[]
+	metricsLoading: boolean
 
 	setConnectionStatus: (status: ConnectionStatus) => void
 	setTargets: (targets: TargetWithStatus[]) => void
@@ -27,6 +28,7 @@ interface AppState {
 	setError: (error: string | null) => void
 	setSelectedTargetSummary: (summary: UptimeSummary | null) => void
 	setSelectedTargetMetrics: (metrics: Metric[]) => void
+	setMetricsLoading: (loading: boolean) => void
 	addMetric: (metric: Metric) => void
 
 	selectNextTarget: () => void
@@ -42,6 +44,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 	error: null,
 	selectedTargetSummary: null,
 	selectedTargetMetrics: [],
+	metricsLoading: false,
 
 	setConnectionStatus: (status) => set({ connectionStatus: status }),
 
@@ -69,7 +72,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 			return { targets: newTargets, selectedTargetId: newSelectedId }
 		}),
 
-	setSelectedTargetId: (id) => set({ selectedTargetId: id, selectedTargetSummary: null, selectedTargetMetrics: [] }),
+	setSelectedTargetId: (id) => set({ selectedTargetId: id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true }),
 
 	addEvent: (event) =>
 		set((state) => ({
@@ -84,7 +87,9 @@ export const useAppStore = create<AppState>((set, get) => ({
 
 	setSelectedTargetSummary: (summary) => set({ selectedTargetSummary: summary }),
 
-	setSelectedTargetMetrics: (metrics) => set({ selectedTargetMetrics: metrics }),
+	setSelectedTargetMetrics: (metrics) => set({ selectedTargetMetrics: metrics, metricsLoading: false }),
+
+	setMetricsLoading: (loading) => set({ metricsLoading: loading }),
 
 	addMetric: (metric) =>
 		set((state) => {
@@ -103,7 +108,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 		const nextIndex = (currentIndex + 1) % state.targets.length
 		const nextTarget = state.targets[nextIndex]
 		if (nextTarget) {
-			set({ selectedTargetId: nextTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [] })
+			set({ selectedTargetId: nextTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true })
 		}
 	},
 
@@ -113,7 +118,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 		const prevIndex = currentIndex <= 0 ? state.targets.length - 1 : currentIndex - 1
 		const prevTarget = state.targets[prevIndex]
 		if (prevTarget) {
-			set({ selectedTargetId: prevTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [] })
+			set({ selectedTargetId: prevTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true })
 		}
 	},
 }))

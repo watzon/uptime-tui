@@ -74,6 +74,7 @@ export function DetailPanel() {
 	const selectedTargetId = useAppStore((state) => state.selectedTargetId)
 	const selectedTargetSummary = useAppStore((state) => state.selectedTargetSummary)
 	const selectedTargetMetrics = useAppStore((state) => state.selectedTargetMetrics)
+	const metricsLoading = useAppStore((state) => state.metricsLoading)
 	const { width: terminalWidth } = useTerminalSize()
 
 	useLoadSummary(selectedTargetId)
@@ -119,11 +120,9 @@ export function DetailPanel() {
 				)}
 			</Box>
 
-			{selectedTargetMetrics.length > 0 && (
-				<Box marginTop={1} flexDirection="column">
-					<UptimeChart metrics={selectedTargetMetrics} width={chartWidth} />
-				</Box>
-			)}
+			<Box marginTop={1} flexDirection="column">
+				<UptimeChart metrics={selectedTargetMetrics} width={chartWidth} loading={metricsLoading} />
+			</Box>
 
 			{selectedTargetSummary && (
 				<Box marginTop={1} flexDirection="column">
