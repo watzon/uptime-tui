@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
@@ -17,10 +17,10 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build the server
-RUN cd packages/server && bun run build
+RUN pnpm --filter @uptime-tui/server run build
 
 # Production image
-FROM oven/bun:1-slim
+FROM node:20-slim
 
 WORKDIR /app
 
@@ -33,4 +33,4 @@ COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000 3001
 
 # Run the server
-CMD ["bun", "run", "dist/index.js"]
+CMD ["node", "dist/index.js"]

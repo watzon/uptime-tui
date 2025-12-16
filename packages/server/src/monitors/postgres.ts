@@ -1,5 +1,5 @@
 import type { MonitorResult, PostgresConfig } from '@uptime-tui/shared'
-import { SQL } from 'bun'
+import postgres from 'postgres'
 import type { Monitor } from './types'
 
 export class PostgresMonitor implements Monitor<PostgresConfig> {
@@ -10,9 +10,10 @@ export class PostgresMonitor implements Monitor<PostgresConfig> {
 		const startTime = performance.now()
 		const query = config.query ?? 'SELECT 1'
 
-		const sql = new SQL({
-			url: config.connectionString,
-			connectTimeout: Math.ceil(timeoutMs / 1000),
+		const sql = postgres(config.connectionString, {
+			connect_timeout: Math.ceil(timeoutMs / 1000),
+			idle_timeout: 1,
+			max: 1,
 		})
 
 		try {
@@ -40,7 +41,7 @@ export class PostgresMonitor implements Monitor<PostgresConfig> {
 				error: error instanceof Error ? error.message : String(error),
 			}
 		} finally {
-			await sql.close()
+			await sql.end()
 		}
 	}
 }

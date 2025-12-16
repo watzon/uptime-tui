@@ -1,5 +1,5 @@
 import type { MonitorResult, RedisConfig } from '@uptime-tui/shared'
-import { RedisClient } from 'bun'
+import { Redis } from 'ioredis'
 import type { Monitor } from './types'
 
 export class RedisMonitor implements Monitor<RedisConfig> {
@@ -10,7 +10,12 @@ export class RedisMonitor implements Monitor<RedisConfig> {
 		const startTime = performance.now()
 		const url = config.url ?? 'redis://localhost:6379'
 
-		const client = new RedisClient(url)
+		const client = new Redis(url, {
+			connectTimeout: timeoutMs,
+			commandTimeout: timeoutMs,
+			maxRetriesPerRequest: 0,
+			lazyConnect: true,
+		})
 
 		try {
 			// Create a timeout promise
@@ -21,8 +26,11 @@ export class RedisMonitor implements Monitor<RedisConfig> {
 				)
 			})
 
-			// Race between ping and timeout
-			await Promise.race([client.ping(), timeoutPromise])
+			// Race between connect + ping and timeout
+			await Promise.race([
+				client.connect().then(() => client.ping()),
+				timeoutPromise,
+			])
 
 			const responseTimeMs = Math.round(performance.now() - startTime)
 			return {
@@ -37,7 +45,7 @@ export class RedisMonitor implements Monitor<RedisConfig> {
 				error: error instanceof Error ? error.message : String(error),
 			}
 		} finally {
-			client.close()
+			client.disconnect()
 		}
 	}
 }

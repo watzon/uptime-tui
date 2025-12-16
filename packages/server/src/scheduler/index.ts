@@ -12,7 +12,7 @@ import { schedulerEvents } from './events'
 import { StatusDetector } from './status-detector'
 
 export class Scheduler {
-	private intervals = new Map<string, Timer>()
+	private intervals = new Map<string, NodeJS.Timeout>()
 	private statusDetector = new StatusDetector()
 	private running = false
 

@@ -19,32 +19,35 @@
 	},
 	"files": ["dist"],
 	"scripts": {
-		"dev": "bun --watch src/index.ts",
-		"build": "bun build src/index.ts --outdir dist --target bun --external cpu-features --external ssh2",
-		"start": "bun dist/index.js",
+		"dev": "tsx watch src/index.ts",
+		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:cpu-features --external:ssh2 --packages=external",
+		"start": "node dist/index.js",
 		"typecheck": "tsc --noEmit",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate": "bun src/db/migrate.ts",
+		"db:migrate": "tsx src/db/migrate.ts",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"db:setup-timescale": "bun src/db/setup-timescale.ts"
+		"db:setup-timescale": "tsx src/db/setup-timescale.ts"
 	},
 	"dependencies": {
-		"@uptime-tui/shared": "workspace:*",
 		"@trpc/server": "^11.0.0-rc.682",
+		"@uptime-tui/shared": "workspace:*",
 		"dockerode": "^4.0.9",
 		"drizzle-orm": "^0.38.2",
+		"ioredis": "^5.8.2",
 		"ping": "^1.0.0",
 		"postgres": "^3.4.5",
 		"ws": "^8.18.0",
 		"zod": "^3.24.1"
 	},
 	"devDependencies": {
-		"@types/bun": "latest",
 		"@types/dockerode": "^3.3.47",
+		"@types/node": "^22.0.0",
 		"@types/ping": "^0.4.4",
 		"@types/ws": "^8.5.13",
 		"drizzle-kit": "^0.30.1",
+		"esbuild": "^0.24.0",
+		"tsx": "^4.19.0",
 		"typescript": "^5.7.2"
 	}
 }
