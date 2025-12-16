@@ -1,9 +1,7 @@
 {
 	"name": "uptime-tui",
 	"private": true,
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"dev": "turbo dev",
 		"build": "turbo build",

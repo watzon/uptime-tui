@@ -20,7 +20,7 @@
 	"files": ["dist"],
 	"scripts": {
 		"dev": "bun --watch src/index.ts",
-		"build": "bun build src/index.ts --outdir dist --target bun",
+		"build": "bun build src/index.ts --outdir dist --target bun --external cpu-features --external ssh2",
 		"start": "bun dist/index.js",
 		"typecheck": "tsc --noEmit",
 		"db:generate": "drizzle-kit generate",
