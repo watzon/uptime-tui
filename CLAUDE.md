@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Downtime TUI is a terminal-based uptime monitoring system with real-time updates. It's a Bun monorepo using Turborepo with three packages:
+Uptime TUI is a terminal-based uptime monitoring system with real-time updates. It's a Bun monorepo using Turborepo with three packages:
 
 - **@downtime/server** - tRPC server with PostgreSQL/TimescaleDB storage and WebSocket subscriptions
 - **@downtime/tui-client** - Ink-based (React for terminal) TUI client with real-time updates

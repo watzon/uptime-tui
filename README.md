@@ -1,4 +1,4 @@
-# Downtime TUI
+# Uptime TUI
 
 A terminal-based downtime monitoring system with real-time updates.
 

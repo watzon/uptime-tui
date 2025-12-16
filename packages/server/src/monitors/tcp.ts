@@ -1,5 +1,5 @@
-import type { MonitorResult, TcpConfig } from '@downtime/shared'
 import { Socket } from 'net'
+import type { MonitorResult, TcpConfig } from '@uptime-tui/shared'
 import type { Monitor } from './types'
 
 export class TcpMonitor implements Monitor<TcpConfig> {

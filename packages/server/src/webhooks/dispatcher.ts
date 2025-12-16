@@ -1,6 +1,6 @@
-import type { Event, EventType, Target } from '@downtime/shared'
+import type { Event, EventType } from '@uptime-tui/shared'
 import { and, eq, lt, lte } from 'drizzle-orm'
-import { db, events, targets, webhookConfigs, webhookDeliveries } from '../db'
+import { events, db, targets, webhookConfigs, webhookDeliveries } from '../db'
 import { schedulerEvents } from '../scheduler'
 
 interface WebhookPayload {
@@ -28,7 +28,13 @@ async function attemptDelivery(
 	deliveryId: string,
 	webhookUrl: string,
 	payload: WebhookPayload,
-): Promise<{ success: boolean; responseCode?: number; responseBody?: string; responseTimeMs?: number; error?: string }> {
+): Promise<{
+	success: boolean
+	responseCode?: number
+	responseBody?: string
+	responseTimeMs?: number
+	error?: string
+}> {
 	const startTime = Date.now()
 
 	try {
@@ -73,7 +79,10 @@ async function processDelivery(deliveryId: string): Promise<void> {
 			webhookEnabled: webhookConfigs.enabled,
 		})
 		.from(webhookDeliveries)
-		.innerJoin(webhookConfigs, eq(webhookDeliveries.webhookId, webhookConfigs.id))
+		.innerJoin(
+			webhookConfigs,
+			eq(webhookDeliveries.webhookId, webhookConfigs.id),
+		)
 		.where(eq(webhookDeliveries.id, deliveryId))
 		.limit(1)
 
@@ -94,8 +103,11 @@ async function processDelivery(deliveryId: string): Promise<void> {
 		.where(eq(targets.id, event.targetId))
 		.limit(1)
 
-	const config = target?.config as { url?: string; host?: string; port?: number } | undefined
-	const targetUrl = config?.url ?? (config?.host ? `${config.host}:${config.port}` : undefined)
+	const config = target?.config as
+		| { url?: string; host?: string; port?: number }
+		| undefined
+	const targetUrl =
+		config?.url ?? (config?.host ? `${config.host}:${config.port}` : undefined)
 
 	const payload: WebhookPayload = {
 		event: event.type as EventType,

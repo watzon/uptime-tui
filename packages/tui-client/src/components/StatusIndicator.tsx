@@ -1,5 +1,9 @@
+import {
+	STATUS_COLORS,
+	STATUS_ICONS,
+	type TargetStatus,
+} from '@uptime-tui/shared'
 import { Text } from 'ink'
-import { STATUS_COLORS, STATUS_ICONS, type TargetStatus } from '@downtime/shared'
 
 interface StatusIndicatorProps {
 	status: TargetStatus

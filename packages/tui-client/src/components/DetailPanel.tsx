@@ -1,21 +1,24 @@
-import { Box, Text } from 'ink'
 import type {
-	HttpConfig,
-	TcpConfig,
-	IcmpConfig,
 	DnsConfig,
 	DockerConfig,
+	HttpConfig,
+	IcmpConfig,
 	PostgresConfig,
 	RedisConfig,
 	TargetType,
-} from '@downtime/shared'
-import { useAppStore } from '../stores/app'
-import { useLoadSummary, useLoadMetrics } from '../hooks/useData'
+	TcpConfig,
+} from '@uptime-tui/shared'
+import { Box, Text } from 'ink'
+import { useLoadMetrics, useLoadSummary } from '../hooks/useData'
 import { useTerminalSize } from '../hooks/useTerminalSize'
+import { useAppStore } from '../stores/app'
 import { StatusIndicator } from './StatusIndicator'
 import { UptimeChart } from './UptimeChart'
 
-function getTargetDescription(type: TargetType, config: unknown): { label: string; value: string } {
+function getTargetDescription(
+	type: TargetType,
+	config: unknown,
+): { label: string; value: string } {
 	switch (type) {
 		case 'http': {
 			const c = config as HttpConfig
@@ -35,7 +38,10 @@ function getTargetDescription(type: TargetType, config: unknown): { label: strin
 		}
 		case 'docker': {
 			const c = config as DockerConfig
-			return { label: 'Container', value: c.containerName ?? c.containerId ?? 'unknown' }
+			return {
+				label: 'Container',
+				value: c.containerName ?? c.containerId ?? 'unknown',
+			}
 		}
 		case 'postgres': {
 			const c = config as PostgresConfig
@@ -47,9 +53,15 @@ function getTargetDescription(type: TargetType, config: unknown): { label: strin
 				const host = match[1]
 				const port = match[2] ?? '5432'
 				const db = match[3] ?? ''
-				return { label: 'Database', value: `${host}:${port}${db ? `/${db}` : ''}` }
+				return {
+					label: 'Database',
+					value: `${host}:${port}${db ? `/${db}` : ''}`,
+				}
 			}
-			return { label: 'Database', value: connStr ? '(configured)' : '(not configured)' }
+			return {
+				label: 'Database',
+				value: connStr ? '(configured)' : '(not configured)',
+			}
 		}
 		case 'redis': {
 			const c = config as RedisConfig
@@ -72,8 +84,12 @@ function getTargetDescription(type: TargetType, config: unknown): { label: strin
 export function DetailPanel() {
 	const targets = useAppStore((state) => state.targets)
 	const selectedTargetId = useAppStore((state) => state.selectedTargetId)
-	const selectedTargetSummary = useAppStore((state) => state.selectedTargetSummary)
-	const selectedTargetMetrics = useAppStore((state) => state.selectedTargetMetrics)
+	const selectedTargetSummary = useAppStore(
+		(state) => state.selectedTargetSummary,
+	)
+	const selectedTargetMetrics = useAppStore(
+		(state) => state.selectedTargetMetrics,
+	)
 	const metricsLoading = useAppStore((state) => state.metricsLoading)
 	const { width: terminalWidth } = useTerminalSize()
 
@@ -110,31 +126,42 @@ export function DetailPanel() {
 			<Box marginBottom={1}>
 				<Text dimColor>Type: </Text>
 				<Text>{target.type.toUpperCase()}</Text>
-				<Text dimColor>  Interval: </Text>
+				<Text dimColor> Interval: </Text>
 				<Text>{target.intervalMs / 1000}s</Text>
 				{target.lastResponseTimeMs !== null && (
 					<>
-						<Text dimColor>  Last: </Text>
+						<Text dimColor> Last: </Text>
 						<Text>{target.lastResponseTimeMs}ms</Text>
 					</>
 				)}
 			</Box>
 
 			<Box marginTop={1} flexDirection="column">
-				<UptimeChart metrics={selectedTargetMetrics} width={chartWidth} loading={metricsLoading} />
+				<UptimeChart
+					metrics={selectedTargetMetrics}
+					width={chartWidth}
+					loading={metricsLoading}
+				/>
 			</Box>
 
 			{selectedTargetSummary && (
 				<Box marginTop={1} flexDirection="column">
 					<Text bold>24h Summary: </Text>
 					<Text>
-						<Text color="green">{selectedTargetSummary.uptimePercent.toFixed(1)}%</Text>
+						<Text color="green">
+							{selectedTargetSummary.uptimePercent.toFixed(1)}%
+						</Text>
 						<Text dimColor> uptime • </Text>
-						{selectedTargetSummary.avgResponseTimeMs !== null
-							? <Text>{selectedTargetSummary.avgResponseTimeMs}ms avg</Text>
-							: <Text dimColor>N/A</Text>}
+						{selectedTargetSummary.avgResponseTimeMs !== null ? (
+							<Text>{selectedTargetSummary.avgResponseTimeMs}ms avg</Text>
+						) : (
+							<Text dimColor>N/A</Text>
+						)}
 						<Text dimColor> • </Text>
-						<Text>{selectedTargetSummary.successfulChecks}/{selectedTargetSummary.totalChecks} checks</Text>
+						<Text>
+							{selectedTargetSummary.successfulChecks}/
+							{selectedTargetSummary.totalChecks} checks
+						</Text>
 					</Text>
 				</Box>
 			)}

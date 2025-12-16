@@ -1,4 +1,4 @@
-import type { HttpConfig, MonitorResult } from '@downtime/shared'
+import type { HttpConfig, MonitorResult } from '@uptime-tui/shared'
 import type { Monitor } from './types'
 
 export class HttpMonitor implements Monitor<HttpConfig> {

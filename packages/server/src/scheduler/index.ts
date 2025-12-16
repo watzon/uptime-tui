@@ -1,6 +1,12 @@
-import type { Event, HttpConfig, Metric, Target, TcpConfig } from '@downtime/shared'
+import type {
+	Event,
+	HttpConfig,
+	Metric,
+	Target,
+	TcpConfig,
+} from '@uptime-tui/shared'
 import { eq } from 'drizzle-orm'
-import { db, events, metrics, targets, targetCurrentStatus } from '../db'
+import { events, db, metrics, targetCurrentStatus, targets } from '../db'
 import { getMonitor } from '../monitors'
 import { schedulerEvents } from './events'
 import { StatusDetector } from './status-detector'
@@ -25,7 +31,10 @@ export class Scheduler {
 
 		for (const target of allTargets) {
 			const status = statusMap.get(target.id)
-			this.statusDetector.initializeTarget(target.id, status?.currentStatus ?? 'unknown')
+			this.statusDetector.initializeTarget(
+				target.id,
+				status?.currentStatus ?? 'unknown',
+			)
 			this.scheduleTarget(target as Target)
 		}
 
@@ -59,7 +68,9 @@ export class Scheduler {
 		}, target.intervalMs)
 
 		this.intervals.set(target.id, interval)
-		console.log(`Scheduled target ${target.name} (${target.id}) every ${target.intervalMs}ms`)
+		console.log(
+			`Scheduled target ${target.name} (${target.id}) every ${target.intervalMs}ms`,
+		)
 	}
 
 	unscheduleTarget(targetId: string): void {
@@ -74,7 +85,10 @@ export class Scheduler {
 	private async runCheck(target: Target): Promise<void> {
 		try {
 			const monitor = getMonitor(target.type)
-			const result = await monitor.execute(target.config as HttpConfig | TcpConfig, target.timeoutMs)
+			const result = await monitor.execute(
+				target.config as HttpConfig | TcpConfig,
+				target.timeoutMs,
+			)
 
 			const metric: Metric = {
 				time: new Date(),
@@ -89,11 +103,12 @@ export class Scheduler {
 
 			schedulerEvents.emit('metricRecorded', { target, metric })
 
-			const { statusChanged, previousStatus, newStatus } = this.statusDetector.processResult(
-				target.id,
-				result,
-				target.failureThreshold,
-			)
+			const { statusChanged, previousStatus, newStatus } =
+				this.statusDetector.processResult(
+					target.id,
+					result,
+					target.failureThreshold,
+				)
 
 			await db
 				.insert(targetCurrentStatus)
@@ -102,7 +117,8 @@ export class Scheduler {
 					currentStatus: newStatus,
 					lastCheckedAt: new Date(),
 					lastResponseTimeMs: result.responseTimeMs,
-					consecutiveFailures: this.statusDetector.getState(target.id)?.consecutiveFailures ?? 0,
+					consecutiveFailures:
+						this.statusDetector.getState(target.id)?.consecutiveFailures ?? 0,
 				})
 				.onConflictDoUpdate({
 					target: targetCurrentStatus.targetId,
@@ -110,7 +126,8 @@ export class Scheduler {
 						currentStatus: newStatus,
 						lastCheckedAt: new Date(),
 						lastResponseTimeMs: result.responseTimeMs,
-						consecutiveFailures: this.statusDetector.getState(target.id)?.consecutiveFailures ?? 0,
+						consecutiveFailures:
+							this.statusDetector.getState(target.id)?.consecutiveFailures ?? 0,
 						updatedAt: new Date(),
 					},
 				})
@@ -123,7 +140,8 @@ export class Scheduler {
 					metric,
 				})
 
-				const eventType = newStatus === 'up' ? 'up' : newStatus === 'down' ? 'down' : null
+				const eventType =
+					newStatus === 'up' ? 'up' : newStatus === 'down' ? 'down' : null
 				if (eventType) {
 					const event: Omit<Event, 'id'> = {
 						targetId: target.id,
@@ -138,7 +156,10 @@ export class Scheduler {
 						createdAt: new Date(),
 					}
 
-					const [insertedEvent] = await db.insert(events).values(event).returning()
+					const [insertedEvent] = await db
+						.insert(events)
+						.values(event)
+						.returning()
 					if (insertedEvent) {
 						schedulerEvents.emit('eventCreated', insertedEvent as Event)
 					}
@@ -159,5 +180,9 @@ export class Scheduler {
 }
 
 export const scheduler = new Scheduler()
-export { schedulerEvents, type StatusChangeEvent, type MetricRecordedEvent } from './events'
+export {
+	schedulerEvents,
+	type StatusChangeEvent,
+	type MetricRecordedEvent,
+} from './events'
 export { StatusDetector } from './status-detector'

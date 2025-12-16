@@ -1,8 +1,8 @@
-import type { Event, TargetStatus } from '@downtime/shared'
+import type { Event, TargetStatus } from '@uptime-tui/shared'
 import { useEffect } from 'react'
+import { log } from '../lib/logger'
 import { trpc } from '../lib/trpc'
 import { useAppStore } from '../stores/app'
-import { log } from '../lib/logger'
 
 export function useSubscriptions() {
 	useEffect(() => {
@@ -44,8 +44,19 @@ export function useSubscriptions() {
 
 		const metricSub = trpc.subscriptions.onMetric.subscribe(undefined, {
 			onData: async (data) => {
-				log('Received metric:', data.target.name, data.metric.status, data.metric.responseTimeMs + 'ms')
-				const { targets, updateTarget, selectedTargetId, setSelectedTargetSummary, addMetric } = useAppStore.getState()
+				log(
+					'Received metric:',
+					data.target.name,
+					data.metric.status,
+					data.metric.responseTimeMs + 'ms',
+				)
+				const {
+					targets,
+					updateTarget,
+					selectedTargetId,
+					setSelectedTargetSummary,
+					addMetric,
+				} = useAppStore.getState()
 				const existingTarget = targets.find((t) => t.id === data.target.id)
 				if (existingTarget) {
 					updateTarget({

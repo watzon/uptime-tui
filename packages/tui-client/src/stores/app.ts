@@ -1,9 +1,26 @@
-import type { Event, Metric, TargetWithStatus, UptimeSummary } from '@downtime/shared'
+import type {
+	Event,
+	Metric,
+	TargetWithStatus,
+	UptimeSummary,
+	WebhookConfig,
+} from '@uptime-tui/shared'
 import { create } from 'zustand'
+import type { Config } from '../lib/config'
 import { log } from '../lib/logger'
 
 type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error'
-type View = 'dashboard' | 'add-target' | 'edit-target' | 'help'
+type View =
+	| 'dashboard'
+	| 'add-target'
+	| 'edit-target'
+	| 'add-webhook'
+	| 'edit-webhook'
+	| 'webhook-detail'
+	| 'test-webhook'
+	| 'help'
+	| 'settings'
+type ActiveTab = 'targets' | 'webhooks'
 
 interface AppState {
 	connectionStatus: ConnectionStatus
@@ -16,6 +33,14 @@ interface AppState {
 	selectedTargetSummary: UptimeSummary | null
 	selectedTargetMetrics: Metric[]
 	metricsLoading: boolean
+
+	// Webhook state
+	activeTab: ActiveTab
+	webhooks: WebhookConfig[]
+	selectedWebhookId: string | null
+
+	// Config state
+	config: Config | null
 
 	setConnectionStatus: (status: ConnectionStatus) => void
 	setTargets: (targets: TargetWithStatus[]) => void
@@ -33,6 +58,18 @@ interface AppState {
 
 	selectNextTarget: () => void
 	selectPrevTarget: () => void
+
+	// Webhook actions
+	setActiveTab: (tab: ActiveTab) => void
+	setWebhooks: (webhooks: WebhookConfig[]) => void
+	updateWebhook: (webhook: WebhookConfig) => void
+	removeWebhook: (id: string) => void
+	setSelectedWebhookId: (id: string | null) => void
+	selectNextWebhook: () => void
+	selectPrevWebhook: () => void
+
+	// Config actions
+	setConfig: (config: Config | null) => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -46,6 +83,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 	selectedTargetMetrics: [],
 	metricsLoading: false,
 
+	// Webhook initial state
+	activeTab: 'targets',
+	webhooks: [],
+	selectedWebhookId: null,
+
+	// Config initial state
+	config: null,
+
 	setConnectionStatus: (status) => set({ connectionStatus: status }),
 
 	setTargets: (targets) => {
@@ -57,9 +102,16 @@ export const useAppStore = create<AppState>((set, get) => ({
 	},
 
 	updateTarget: (target) => {
-		log('Store updateTarget called:', target.name, target.currentStatus, target.lastResponseTimeMs)
+		log(
+			'Store updateTarget called:',
+			target.name,
+			target.currentStatus,
+			target.lastResponseTimeMs,
+		)
 		set((state) => {
-			const newTargets = state.targets.map((t) => (t.id === target.id ? target : t))
+			const newTargets = state.targets.map((t) =>
+				t.id === target.id ? target : t,
+			)
 			log('Store updating targets array, length:', newTargets.length)
 			return { targets: newTargets }
 		})
@@ -68,11 +120,20 @@ export const useAppStore = create<AppState>((set, get) => ({
 	removeTarget: (id) =>
 		set((state) => {
 			const newTargets = state.targets.filter((t) => t.id !== id)
-			const newSelectedId = state.selectedTargetId === id ? (newTargets[0]?.id ?? null) : state.selectedTargetId
+			const newSelectedId =
+				state.selectedTargetId === id
+					? (newTargets[0]?.id ?? null)
+					: state.selectedTargetId
 			return { targets: newTargets, selectedTargetId: newSelectedId }
 		}),
 
-	setSelectedTargetId: (id) => set({ selectedTargetId: id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true }),
+	setSelectedTargetId: (id) =>
+		set({
+			selectedTargetId: id,
+			selectedTargetSummary: null,
+			selectedTargetMetrics: [],
+			metricsLoading: true,
+		}),
 
 	addEvent: (event) =>
 		set((state) => ({
@@ -85,9 +146,11 @@ export const useAppStore = create<AppState>((set, get) => ({
 
 	setError: (error) => set({ error }),
 
-	setSelectedTargetSummary: (summary) => set({ selectedTargetSummary: summary }),
+	setSelectedTargetSummary: (summary) =>
+		set({ selectedTargetSummary: summary }),
 
-	setSelectedTargetMetrics: (metrics) => set({ selectedTargetMetrics: metrics, metricsLoading: false }),
+	setSelectedTargetMetrics: (metrics) =>
+		set({ selectedTargetMetrics: metrics, metricsLoading: false }),
 
 	setMetricsLoading: (loading) => set({ metricsLoading: loading }),
 
@@ -104,21 +167,92 @@ export const useAppStore = create<AppState>((set, get) => ({
 
 	selectNextTarget: () => {
 		const state = get()
-		const currentIndex = state.targets.findIndex((t) => t.id === state.selectedTargetId)
+		const currentIndex = state.targets.findIndex(
+			(t) => t.id === state.selectedTargetId,
+		)
 		const nextIndex = (currentIndex + 1) % state.targets.length
 		const nextTarget = state.targets[nextIndex]
 		if (nextTarget) {
-			set({ selectedTargetId: nextTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true })
+			set({
+				selectedTargetId: nextTarget.id,
+				selectedTargetSummary: null,
+				selectedTargetMetrics: [],
+				metricsLoading: true,
+			})
 		}
 	},
 
 	selectPrevTarget: () => {
 		const state = get()
-		const currentIndex = state.targets.findIndex((t) => t.id === state.selectedTargetId)
-		const prevIndex = currentIndex <= 0 ? state.targets.length - 1 : currentIndex - 1
+		const currentIndex = state.targets.findIndex(
+			(t) => t.id === state.selectedTargetId,
+		)
+		const prevIndex =
+			currentIndex <= 0 ? state.targets.length - 1 : currentIndex - 1
 		const prevTarget = state.targets[prevIndex]
 		if (prevTarget) {
-			set({ selectedTargetId: prevTarget.id, selectedTargetSummary: null, selectedTargetMetrics: [], metricsLoading: true })
+			set({
+				selectedTargetId: prevTarget.id,
+				selectedTargetSummary: null,
+				selectedTargetMetrics: [],
+				metricsLoading: true,
+			})
 		}
 	},
+
+	// Webhook actions
+	setActiveTab: (tab) => set({ activeTab: tab }),
+
+	setWebhooks: (webhooks) => {
+		const state = get()
+		set({ webhooks })
+		if (!state.selectedWebhookId && webhooks.length > 0) {
+			set({ selectedWebhookId: webhooks[0]?.id ?? null })
+		}
+	},
+
+	updateWebhook: (webhook) =>
+		set((state) => ({
+			webhooks: state.webhooks.map((w) => (w.id === webhook.id ? webhook : w)),
+		})),
+
+	removeWebhook: (id) =>
+		set((state) => {
+			const newWebhooks = state.webhooks.filter((w) => w.id !== id)
+			const newSelectedId =
+				state.selectedWebhookId === id
+					? (newWebhooks[0]?.id ?? null)
+					: state.selectedWebhookId
+			return { webhooks: newWebhooks, selectedWebhookId: newSelectedId }
+		}),
+
+	setSelectedWebhookId: (id) => set({ selectedWebhookId: id }),
+
+	selectNextWebhook: () => {
+		const state = get()
+		const currentIndex = state.webhooks.findIndex(
+			(w) => w.id === state.selectedWebhookId,
+		)
+		const nextIndex = (currentIndex + 1) % state.webhooks.length
+		const nextWebhook = state.webhooks[nextIndex]
+		if (nextWebhook) {
+			set({ selectedWebhookId: nextWebhook.id })
+		}
+	},
+
+	selectPrevWebhook: () => {
+		const state = get()
+		const currentIndex = state.webhooks.findIndex(
+			(w) => w.id === state.selectedWebhookId,
+		)
+		const prevIndex =
+			currentIndex <= 0 ? state.webhooks.length - 1 : currentIndex - 1
+		const prevWebhook = state.webhooks[prevIndex]
+		if (prevWebhook) {
+			set({ selectedWebhookId: prevWebhook.id })
+		}
+	},
+
+	// Config actions
+	setConfig: (config) => set({ config }),
 }))

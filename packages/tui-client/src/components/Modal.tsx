@@ -16,11 +16,7 @@ export function Modal({ title, children, width = 50, footer }: ModalProps) {
 	const horizontalPadding = Math.max(0, Math.floor((terminalWidth - width) / 2))
 
 	return (
-		<Box
-			flexDirection="column"
-			height={terminalHeight}
-			width={terminalWidth}
-		>
+		<Box flexDirection="column" height={terminalHeight} width={terminalWidth}>
 			{/* Top spacer to vertically center */}
 			<Box flexGrow={1} />
 
@@ -41,7 +37,9 @@ export function Modal({ title, children, width = 50, footer }: ModalProps) {
 						borderRight={false}
 						borderColor="cyan"
 					>
-						<Text bold color="cyan">{title}</Text>
+						<Text bold color="cyan">
+							{title}
+						</Text>
 					</Box>
 
 					{/* Content */}

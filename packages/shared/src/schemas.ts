@@ -1,6 +1,14 @@
 import { z } from 'zod'
 
-export const targetTypeSchema = z.enum(['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
+export const targetTypeSchema = z.enum([
+	'http',
+	'tcp',
+	'icmp',
+	'dns',
+	'docker',
+	'postgres',
+	'redis',
+])
 export const targetStatusSchema = z.enum(['up', 'down', 'degraded', 'unknown'])
 export const eventTypeSchema = z.enum([
 	'up',
@@ -35,7 +43,10 @@ export const icmpConfigSchema = z.object({
 
 export const dnsConfigSchema = z.object({
 	host: z.string().min(1),
-	recordType: z.enum(['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS']).optional().default('A'),
+	recordType: z
+		.enum(['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS'])
+		.optional()
+		.default('A'),
 	nameserver: z.string().optional(),
 	expectedValue: z.string().optional(),
 })
@@ -48,7 +59,7 @@ export const dockerConfigBaseSchema = z.object({
 
 export const dockerConfigSchema = dockerConfigBaseSchema.refine(
 	(data) => data.containerId || data.containerName,
-	{ message: 'Either containerId or containerName is required' }
+	{ message: 'Either containerId or containerName is required' },
 )
 
 export const postgresConfigSchema = z.object({
@@ -86,7 +97,13 @@ export const createTargetInputSchema = z
 		name: z.string().min(1).max(100),
 		type: targetTypeSchema,
 		config: z.record(z.unknown()), // Accept any object initially
-		intervalMs: z.number().int().min(5000).max(3600000).optional().default(60000),
+		intervalMs: z
+			.number()
+			.int()
+			.min(5000)
+			.max(3600000)
+			.optional()
+			.default(60000),
 		timeoutMs: z.number().int().min(1000).max(60000).optional().default(5000),
 		enabled: z.boolean().optional().default(true),
 		failureThreshold: z.number().int().min(1).max(10).optional().default(2),
@@ -127,7 +144,10 @@ export const metricsQueryInputSchema = z.object({
 	targetId: z.string().uuid(),
 	startTime: z.date(),
 	endTime: z.date(),
-	aggregation: z.enum(['raw', '1m', '5m', '1h', '1d']).optional().default('raw'),
+	aggregation: z
+		.enum(['raw', '1m', '5m', '1h', '1d'])
+		.optional()
+		.default('raw'),
 	limit: z.number().int().min(1).max(10000).optional().default(1000),
 })
 

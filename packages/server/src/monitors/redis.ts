@@ -1,9 +1,12 @@
-import type { MonitorResult, RedisConfig } from '@downtime/shared'
+import type { MonitorResult, RedisConfig } from '@uptime-tui/shared'
 import { RedisClient } from 'bun'
 import type { Monitor } from './types'
 
 export class RedisMonitor implements Monitor<RedisConfig> {
-	async execute(config: RedisConfig, timeoutMs: number): Promise<MonitorResult> {
+	async execute(
+		config: RedisConfig,
+		timeoutMs: number,
+	): Promise<MonitorResult> {
 		const startTime = performance.now()
 		const url = config.url ?? 'redis://localhost:6379'
 
@@ -12,7 +15,10 @@ export class RedisMonitor implements Monitor<RedisConfig> {
 		try {
 			// Create a timeout promise
 			const timeoutPromise = new Promise<never>((_, reject) => {
-				setTimeout(() => reject(new Error(`Connection timed out after ${timeoutMs}ms`)), timeoutMs)
+				setTimeout(
+					() => reject(new Error(`Connection timed out after ${timeoutMs}ms`)),
+					timeoutMs,
+				)
 			})
 
 			// Race between ping and timeout

@@ -6,7 +6,7 @@
 
 ## Overview
 
-Extend the downtime-tui monitoring capabilities from HTTP/TCP to include ICMP, DNS, Docker, PostgreSQL, and Redis monitors. This brings the tool closer to Uptime Kuma's functionality while maintaining the TUI-first power user focus.
+Extend the uptime-tui monitoring capabilities from HTTP/TCP to include ICMP, DNS, Docker, PostgreSQL, and Redis monitors. This brings the tool closer to Uptime Kuma's functionality while maintaining the TUI-first power user focus.
 
 ## New Monitor Types
 

@@ -1,4 +1,11 @@
-export type TargetType = 'http' | 'tcp' | 'icmp' | 'dns' | 'docker' | 'postgres' | 'redis'
+export type TargetType =
+	| 'http'
+	| 'tcp'
+	| 'icmp'
+	| 'dns'
+	| 'docker'
+	| 'postgres'
+	| 'redis'
 export type TargetStatus = 'up' | 'down' | 'degraded' | 'unknown'
 export type EventType =
 	| 'up'

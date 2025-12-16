@@ -1,16 +1,13 @@
-import { z } from 'zod'
+import { loadConfig } from './config'
 
-const envSchema = z.object({
-	SERVER_URL: z.string().url().default('http://localhost:3000'),
-	WS_URL: z.string().url().default('ws://localhost:3001'),
-	API_KEY: z.string().min(1),
-})
+// Load config from file or environment variables
+// This is used by the tRPC client at module load time
+const config = loadConfig()
 
-const parsed = envSchema.safeParse(process.env)
-
-if (!parsed.success) {
-	console.error('Invalid environment variables:', parsed.error.flatten().fieldErrors)
-	process.exit(1)
+// Export values for tRPC client
+// If no config, use defaults - the setup wizard will handle getting the API key
+export const env = {
+	SERVER_URL: config?.serverUrl ?? 'http://localhost:3000',
+	WS_URL: config?.wsUrl ?? 'ws://localhost:3001',
+	API_KEY: config?.apiKey ?? '',
 }
-
-export const env = parsed.data

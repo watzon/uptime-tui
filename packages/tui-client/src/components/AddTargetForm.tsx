@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import type { TargetType } from '@uptime-tui/shared'
 import { Box, Text, useInput } from 'ink'
-import type { TargetType } from '@downtime/shared'
+import { useState } from 'react'
 import { trpc } from '../lib/trpc'
 import { useAppStore } from '../stores/app'
-import { Modal } from './Modal'
 import { FormField } from './FormField'
+import { Modal } from './Modal'
 import { SelectField } from './SelectField'
 
 const TARGET_TYPE_OPTIONS = [
@@ -63,7 +63,14 @@ function getFieldsForType(type: TargetType): FieldName[] {
 		case 'icmp':
 			return [...commonStart, 'icmpHost', ...commonEnd]
 		case 'dns':
-			return [...commonStart, 'dnsHost', 'recordType', 'nameserver', 'expectedValue', ...commonEnd]
+			return [
+				...commonStart,
+				'dnsHost',
+				'recordType',
+				'nameserver',
+				'expectedValue',
+				...commonEnd,
+			]
 		case 'docker':
 			return [...commonStart, 'containerName', 'socketPath', ...commonEnd]
 		case 'postgres':
@@ -133,7 +140,7 @@ export function AddTargetForm() {
 			newErrors.name = 'Name is required'
 		}
 
-		const intervalNum = parseInt(interval, 10)
+		const intervalNum = Number.parseInt(interval, 10)
 		if (isNaN(intervalNum) || intervalNum < 5 || intervalNum > 3600) {
 			newErrors.interval = 'Must be between 5 and 3600 seconds'
 		}
@@ -149,7 +156,7 @@ export function AddTargetForm() {
 				break
 			case 'tcp':
 				if (!host.trim()) newErrors.host = 'Host is required'
-				const portNum = parseInt(port, 10)
+				const portNum = Number.parseInt(port, 10)
 				if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
 					newErrors.port = 'Port must be between 1 and 65535'
 				}
@@ -161,10 +168,12 @@ export function AddTargetForm() {
 				if (!dnsHost.trim()) newErrors.dnsHost = 'Host is required'
 				break
 			case 'docker':
-				if (!containerName.trim()) newErrors.containerName = 'Container name is required'
+				if (!containerName.trim())
+					newErrors.containerName = 'Container name is required'
 				break
 			case 'postgres':
-				if (!connectionString.trim()) newErrors.connectionString = 'Connection string is required'
+				if (!connectionString.trim())
+					newErrors.connectionString = 'Connection string is required'
 				break
 			case 'redis':
 				// Redis URL has a default, so it's optional
@@ -180,13 +189,19 @@ export function AddTargetForm() {
 			case 'http':
 				return { url }
 			case 'tcp':
-				return { host, port: parseInt(port, 10) }
+				return { host, port: Number.parseInt(port, 10) }
 			case 'icmp':
 				return { host: icmpHost }
 			case 'dns':
 				return {
 					host: dnsHost,
-					recordType: recordType as 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS',
+					recordType: recordType as
+						| 'A'
+						| 'AAAA'
+						| 'MX'
+						| 'TXT'
+						| 'CNAME'
+						| 'NS',
 					...(nameserver && { nameserver }),
 					...(expectedValue && { expectedValue }),
 				}
@@ -218,7 +233,7 @@ export function AddTargetForm() {
 				name: name.trim(),
 				type,
 				config: buildConfig(),
-				intervalMs: parseInt(interval, 10) * 1000,
+				intervalMs: Number.parseInt(interval, 10) * 1000,
 			})
 
 			setTargets([
@@ -234,7 +249,9 @@ export function AddTargetForm() {
 			])
 			setView('dashboard')
 		} catch (err) {
-			setErrors({ submit: err instanceof Error ? err.message : 'Failed to create target' })
+			setErrors({
+				submit: err instanceof Error ? err.message : 'Failed to create target',
+			})
 			setIsSubmitting(false)
 		}
 	}
@@ -286,7 +303,8 @@ export function AddTargetForm() {
 
 	const footer = (
 		<Text dimColor>
-			Tab/Arrows: navigate | Enter: {focusedIndex === fields.length - 1 ? 'submit' : 'next'} | Esc: cancel
+			Tab/Arrows: navigate | Enter:{' '}
+			{focusedIndex === fields.length - 1 ? 'submit' : 'next'} | Esc: cancel
 		</Text>
 	)
 

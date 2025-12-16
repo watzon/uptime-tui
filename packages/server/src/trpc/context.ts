@@ -4,8 +4,13 @@ import { env } from '../env'
 
 type ContextOptions = CreateHTTPContextOptions | CreateWSSContextFnOptions
 
-function hasConnectionParams(opts: ContextOptions): opts is CreateWSSContextFnOptions {
-	return 'info' in opts && 'connectionParams' in (opts as CreateWSSContextFnOptions).info
+function hasConnectionParams(
+	opts: ContextOptions,
+): opts is CreateWSSContextFnOptions {
+	return (
+		'info' in opts &&
+		'connectionParams' in (opts as CreateWSSContextFnOptions).info
+	)
 }
 
 export async function createContext(opts: ContextOptions) {
@@ -13,7 +18,9 @@ export async function createContext(opts: ContextOptions) {
 
 	// Try WebSocket connectionParams first
 	if (hasConnectionParams(opts)) {
-		const params = opts.info.connectionParams as Record<string, unknown> | undefined
+		const params = opts.info.connectionParams as
+			| Record<string, unknown>
+			| undefined
 		if (params?.apiKey) {
 			apiKey = params.apiKey as string
 		}
@@ -21,7 +28,8 @@ export async function createContext(opts: ContextOptions) {
 
 	// Try HTTP headers
 	if (!apiKey && 'req' in opts && opts.req) {
-		const authHeader = opts.req.headers.authorization ?? opts.req.headers['x-api-key']
+		const authHeader =
+			opts.req.headers.authorization ?? opts.req.headers['x-api-key']
 		if (typeof authHeader === 'string') {
 			apiKey = authHeader.replace('Bearer ', '')
 		}

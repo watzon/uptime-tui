@@ -7,10 +7,17 @@ import type {
 	PostgresConfig,
 	RedisConfig,
 	TcpConfig,
-} from '@downtime/shared'
+} from '@uptime-tui/shared'
 
 export interface Monitor<
-	T = HttpConfig | TcpConfig | IcmpConfig | DnsConfig | DockerConfig | PostgresConfig | RedisConfig,
+	T =
+		| HttpConfig
+		| TcpConfig
+		| IcmpConfig
+		| DnsConfig
+		| DockerConfig
+		| PostgresConfig
+		| RedisConfig,
 > {
 	execute(config: T, timeoutMs: number): Promise<MonitorResult>
 }

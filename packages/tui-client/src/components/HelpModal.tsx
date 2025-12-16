@@ -14,6 +14,7 @@ const KEYBINDINGS: KeyBinding[] = [
 	{ key: 'e', description: 'Edit selected target' },
 	{ key: 'd', description: 'Delete selected target' },
 	{ key: 'r', description: 'Refresh targets list' },
+	{ key: ',', description: 'Open settings' },
 	{ key: '?', description: 'Show this help' },
 	{ key: 'q', description: 'Quit' },
 ]
@@ -39,7 +40,9 @@ export function HelpModal() {
 	return (
 		<Modal title="Keyboard Shortcuts" width={50} footer={footer}>
 			<Box flexDirection="column">
-				<Text bold color="cyan">Dashboard</Text>
+				<Text bold color="cyan">
+					Dashboard
+				</Text>
 				<Box flexDirection="column" marginBottom={1}>
 					{KEYBINDINGS.map((kb) => (
 						<Box key={kb.key}>
@@ -49,7 +52,9 @@ export function HelpModal() {
 					))}
 				</Box>
 
-				<Text bold color="cyan">Forms</Text>
+				<Text bold color="cyan">
+					Forms
+				</Text>
 				<Box flexDirection="column">
 					{FORM_KEYBINDINGS.map((kb) => (
 						<Box key={kb.key}>

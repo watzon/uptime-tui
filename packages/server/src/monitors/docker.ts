@@ -1,9 +1,12 @@
-import type { DockerConfig, MonitorResult } from '@downtime/shared'
+import type { DockerConfig, MonitorResult } from '@uptime-tui/shared'
 import Docker from 'dockerode'
 import type { Monitor } from './types'
 
 export class DockerMonitor implements Monitor<DockerConfig> {
-	async execute(config: DockerConfig, timeoutMs: number): Promise<MonitorResult> {
+	async execute(
+		config: DockerConfig,
+		timeoutMs: number,
+	): Promise<MonitorResult> {
 		const startTime = performance.now()
 		const socketPath = config.socketPath ?? '/var/run/docker.sock'
 
@@ -12,7 +15,11 @@ export class DockerMonitor implements Monitor<DockerConfig> {
 		try {
 			// Create a timeout promise
 			const timeoutPromise = new Promise<never>((_, reject) => {
-				setTimeout(() => reject(new Error(`Docker inspect timed out after ${timeoutMs}ms`)), timeoutMs)
+				setTimeout(
+					() =>
+						reject(new Error(`Docker inspect timed out after ${timeoutMs}ms`)),
+					timeoutMs,
+				)
 			})
 
 			// Get container by ID or name
@@ -59,7 +66,8 @@ export class DockerMonitor implements Monitor<DockerConfig> {
 			}
 		} catch (error) {
 			const responseTimeMs = Math.round(performance.now() - startTime)
-			const errorMessage = error instanceof Error ? error.message : String(error)
+			const errorMessage =
+				error instanceof Error ? error.message : String(error)
 
 			// Provide more helpful error messages for common issues
 			if (errorMessage.includes('ENOENT') || errorMessage.includes('EACCES')) {
@@ -70,7 +78,10 @@ export class DockerMonitor implements Monitor<DockerConfig> {
 				}
 			}
 
-			if (errorMessage.includes('404') || errorMessage.includes('no such container')) {
+			if (
+				errorMessage.includes('404') ||
+				errorMessage.includes('no such container')
+			) {
 				return {
 					status: 'down',
 					responseTimeMs,

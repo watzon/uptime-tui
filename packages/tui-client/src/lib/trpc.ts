@@ -1,5 +1,11 @@
-import { createTRPCClient, createWSClient, httpLink, splitLink, wsLink } from '@trpc/client'
-import type { AppRouter } from '@downtime/server'
+import type { AppRouter } from '@uptime-tui/server'
+import {
+	createTRPCClient,
+	createWSClient,
+	httpLink,
+	splitLink,
+	wsLink,
+} from '@trpc/client'
 import superjson from 'superjson'
 import { env } from './env'
 import { log } from './logger'

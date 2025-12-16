@@ -6,7 +6,10 @@ const logFile = join(process.cwd(), 'tui-debug.log')
 
 // Clear log on start if debug is enabled
 if (DEBUG_ENABLED) {
-	writeFileSync(logFile, `--- TUI Client Started ${new Date().toISOString()} ---\n`)
+	writeFileSync(
+		logFile,
+		`--- TUI Client Started ${new Date().toISOString()} ---\n`,
+	)
 }
 
 export function log(...args: unknown[]) {

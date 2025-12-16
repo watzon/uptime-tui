@@ -1,15 +1,17 @@
-import type { Event, Metric, TargetWithStatus } from '@downtime/shared'
+import type { Event, Metric, TargetWithStatus } from '@uptime-tui/shared'
 import { useEffect } from 'react'
+import { log } from '../lib/logger'
 import { trpc } from '../lib/trpc'
 import { useAppStore } from '../stores/app'
-import { log } from '../lib/logger'
 
 function parseTarget(raw: Record<string, unknown>): TargetWithStatus {
 	return {
 		...raw,
 		createdAt: new Date(raw.createdAt as string),
 		updatedAt: new Date(raw.updatedAt as string),
-		lastCheckedAt: raw.lastCheckedAt ? new Date(raw.lastCheckedAt as string) : null,
+		lastCheckedAt: raw.lastCheckedAt
+			? new Date(raw.lastCheckedAt as string)
+			: null,
 	} as TargetWithStatus
 }
 
@@ -40,12 +42,24 @@ export function useLoadData() {
 					trpc.events.list.query({ limit: 50 }),
 				])
 
-				setTargets(targetsResult.map((t) => parseTarget(t as unknown as Record<string, unknown>)))
-				setEvents(eventsResult.items.map((e) => parseEvent(e as unknown as Record<string, unknown>)))
+				setTargets(
+					targetsResult.map((t) =>
+						parseTarget(t as unknown as Record<string, unknown>),
+					),
+				)
+				setEvents(
+					eventsResult.items.map((e) =>
+						parseEvent(e as unknown as Record<string, unknown>),
+					),
+				)
 				setConnectionStatus('connected')
 			} catch (error) {
 				setConnectionStatus('error')
-				setError(error instanceof Error ? error.message : 'Failed to connect to server')
+				setError(
+					error instanceof Error
+						? error.message
+						: 'Failed to connect to server',
+				)
 			}
 		}
 
@@ -96,7 +110,12 @@ export function useLoadMetrics(targetId: string | null) {
 				const now = new Date()
 				const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
 
-				log('Fetching metrics from', oneHourAgo.toISOString(), 'to', now.toISOString())
+				log(
+					'Fetching metrics from',
+					oneHourAgo.toISOString(),
+					'to',
+					now.toISOString(),
+				)
 
 				const metrics = await trpc.metrics.query.query({
 					targetId: targetId!,
@@ -109,7 +128,11 @@ export function useLoadMetrics(targetId: string | null) {
 				log('Received', metrics.length, 'metrics for target', targetId)
 
 				// setSelectedTargetMetrics also sets metricsLoading to false
-				setSelectedTargetMetrics(metrics.map((m) => parseMetric(m as unknown as Record<string, unknown>)))
+				setSelectedTargetMetrics(
+					metrics.map((m) =>
+						parseMetric(m as unknown as Record<string, unknown>),
+					),
+				)
 			} catch (error) {
 				log('Failed to load metrics:', error)
 				setMetricsLoading(false)

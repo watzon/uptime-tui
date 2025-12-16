@@ -1,5 +1,5 @@
-import type { DnsConfig, MonitorResult } from '@downtime/shared'
 import dns from 'node:dns'
+import type { DnsConfig, MonitorResult } from '@uptime-tui/shared'
 import type { Monitor } from './types'
 
 type DnsRecordType = 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS'
@@ -18,11 +18,18 @@ export class DnsMonitor implements Monitor<DnsConfig> {
 		try {
 			// Create a timeout promise
 			const timeoutPromise = new Promise<never>((_, reject) => {
-				setTimeout(() => reject(new Error(`DNS lookup timed out after ${timeoutMs}ms`)), timeoutMs)
+				setTimeout(
+					() => reject(new Error(`DNS lookup timed out after ${timeoutMs}ms`)),
+					timeoutMs,
+				)
 			})
 
 			// Resolve based on record type
-			const resolvePromise = this.resolveRecord(resolver, config.host, recordType)
+			const resolvePromise = this.resolveRecord(
+				resolver,
+				config.host,
+				recordType,
+			)
 
 			const records = await Promise.race([resolvePromise, timeoutPromise])
 			const responseTimeMs = Math.round(performance.now() - startTime)
@@ -56,7 +63,7 @@ export class DnsMonitor implements Monitor<DnsConfig> {
 	private async resolveRecord(
 		resolver: dns.promises.Resolver,
 		host: string,
-		recordType: DnsRecordType
+		recordType: DnsRecordType,
 	): Promise<unknown[]> {
 		switch (recordType) {
 			case 'A':
@@ -76,7 +83,10 @@ export class DnsMonitor implements Monitor<DnsConfig> {
 		}
 	}
 
-	private containsExpectedValue(records: unknown[], expectedValue: string): boolean {
+	private containsExpectedValue(
+		records: unknown[],
+		expectedValue: string,
+	): boolean {
 		return records.some((record) => {
 			if (typeof record === 'string') {
 				return record.includes(expectedValue)
@@ -93,7 +103,9 @@ export class DnsMonitor implements Monitor<DnsConfig> {
 			}
 			// TXT records are arrays of strings
 			if (Array.isArray(record)) {
-				return record.some((r) => typeof r === 'string' && r.includes(expectedValue))
+				return record.some(
+					(r) => typeof r === 'string' && r.includes(expectedValue),
+				)
 			}
 			return String(record).includes(expectedValue)
 		})

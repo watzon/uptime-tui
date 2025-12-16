@@ -1,4 +1,4 @@
-import type { MonitorResult, TargetStatus } from '@downtime/shared'
+import type { MonitorResult, TargetStatus } from '@uptime-tui/shared'
 
 interface TargetState {
 	currentStatus: TargetStatus
@@ -10,7 +10,10 @@ interface TargetState {
 export class StatusDetector {
 	private states = new Map<string, TargetState>()
 
-	initializeTarget(targetId: string, initialStatus: TargetStatus = 'unknown'): void {
+	initializeTarget(
+		targetId: string,
+		initialStatus: TargetStatus = 'unknown',
+	): void {
 		if (!this.states.has(targetId)) {
 			this.states.set(targetId, {
 				currentStatus: initialStatus,
@@ -25,7 +28,11 @@ export class StatusDetector {
 		targetId: string,
 		result: MonitorResult,
 		failureThreshold: number,
-	): { statusChanged: boolean; previousStatus: TargetStatus; newStatus: TargetStatus } {
+	): {
+		statusChanged: boolean
+		previousStatus: TargetStatus
+		newStatus: TargetStatus
+	} {
 		let state = this.states.get(targetId)
 
 		if (!state) {

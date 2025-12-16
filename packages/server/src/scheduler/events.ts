@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import type { Event, Metric, Target, TargetStatus } from '@downtime/shared'
+import type { Event, Metric, Target, TargetStatus } from '@uptime-tui/shared'
 
 export interface StatusChangeEvent {
 	target: Target
@@ -20,15 +20,24 @@ export interface SchedulerEvents {
 }
 
 class TypedEventEmitter extends EventEmitter {
-	override emit<K extends keyof SchedulerEvents>(event: K, ...args: SchedulerEvents[K]): boolean {
+	override emit<K extends keyof SchedulerEvents>(
+		event: K,
+		...args: SchedulerEvents[K]
+	): boolean {
 		return super.emit(event, ...args)
 	}
 
-	override on<K extends keyof SchedulerEvents>(event: K, listener: (...args: SchedulerEvents[K]) => void): this {
+	override on<K extends keyof SchedulerEvents>(
+		event: K,
+		listener: (...args: SchedulerEvents[K]) => void,
+	): this {
 		return super.on(event, listener)
 	}
 
-	override off<K extends keyof SchedulerEvents>(event: K, listener: (...args: SchedulerEvents[K]) => void): this {
+	override off<K extends keyof SchedulerEvents>(
+		event: K,
+		listener: (...args: SchedulerEvents[K]) => void,
+	): this {
 		return super.off(event, listener)
 	}
 }

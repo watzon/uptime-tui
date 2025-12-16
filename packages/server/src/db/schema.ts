@@ -10,8 +10,21 @@ import {
 	uuid,
 } from 'drizzle-orm/pg-core'
 
-export const targetTypeEnum = pgEnum('target_type', ['http', 'tcp', 'icmp', 'dns', 'docker', 'postgres', 'redis'])
-export const targetStatusEnum = pgEnum('target_status', ['up', 'down', 'degraded', 'unknown'])
+export const targetTypeEnum = pgEnum('target_type', [
+	'http',
+	'tcp',
+	'icmp',
+	'dns',
+	'docker',
+	'postgres',
+	'redis',
+])
+export const targetStatusEnum = pgEnum('target_status', [
+	'up',
+	'down',
+	'degraded',
+	'unknown',
+])
 export const eventTypeEnum = pgEnum('event_type', [
 	'up',
 	'down',
@@ -38,10 +51,17 @@ export const targets = pgTable(
 		timeoutMs: integer('timeout_ms').notNull().default(5000),
 		enabled: boolean('enabled').notNull().default(true),
 		failureThreshold: integer('failure_threshold').notNull().default(2),
-		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-		updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+		createdAt: timestamp('created_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
+		updatedAt: timestamp('updated_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
-	(table) => [index('targets_owner_id_idx').on(table.ownerId), index('targets_enabled_idx').on(table.enabled)],
+	(table) => [
+		index('targets_owner_id_idx').on(table.ownerId),
+		index('targets_enabled_idx').on(table.enabled),
+	],
 )
 
 export const metrics = pgTable(
@@ -72,7 +92,9 @@ export const events = pgTable(
 		type: eventTypeEnum('type').notNull(),
 		message: text('message').notNull(),
 		metadata: jsonb('metadata').notNull().default({}),
-		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+		createdAt: timestamp('created_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
 	(table) => [
 		index('events_target_id_idx').on(table.targetId),
@@ -90,13 +112,21 @@ export const webhookConfigs = pgTable(
 		url: text('url').notNull(),
 		events: text('events').array().notNull(),
 		enabled: boolean('enabled').notNull().default(true),
-		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-		updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+		createdAt: timestamp('created_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
+		updatedAt: timestamp('updated_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
 	(table) => [index('webhook_configs_owner_id_idx').on(table.ownerId)],
 )
 
-export const deliveryStatusEnum = pgEnum('delivery_status', ['pending', 'success', 'failed'])
+export const deliveryStatusEnum = pgEnum('delivery_status', [
+	'pending',
+	'success',
+	'failed',
+])
 
 export const webhookDeliveries = pgTable(
 	'webhook_deliveries',
@@ -116,11 +146,16 @@ export const webhookDeliveries = pgTable(
 		responseBody: text('response_body'),
 		responseTimeMs: integer('response_time_ms'),
 		errorMessage: text('error_message'),
-		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+		createdAt: timestamp('created_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
 	(table) => [
 		index('webhook_deliveries_webhook_id_idx').on(table.webhookId),
-		index('webhook_deliveries_status_retry_idx').on(table.status, table.nextRetryAt),
+		index('webhook_deliveries_status_retry_idx').on(
+			table.status,
+			table.nextRetryAt,
+		),
 	],
 )
 
@@ -130,11 +165,15 @@ export const targetCurrentStatus = pgTable(
 		targetId: uuid('target_id')
 			.primaryKey()
 			.references(() => targets.id, { onDelete: 'cascade' }),
-		currentStatus: targetStatusEnum('current_status').notNull().default('unknown'),
+		currentStatus: targetStatusEnum('current_status')
+			.notNull()
+			.default('unknown'),
 		lastCheckedAt: timestamp('last_checked_at', { withTimezone: true }),
 		lastResponseTimeMs: integer('last_response_time_ms'),
 		consecutiveFailures: integer('consecutive_failures').notNull().default(0),
-		updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: timestamp('updated_at', { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
 	(table) => [index('target_current_status_idx').on(table.currentStatus)],
 )

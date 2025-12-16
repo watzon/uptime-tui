@@ -1,4 +1,4 @@
-import type { IcmpConfig, MonitorResult } from '@downtime/shared'
+import type { IcmpConfig, MonitorResult } from '@uptime-tui/shared'
 import ping from 'ping'
 import type { Monitor } from './types'
 

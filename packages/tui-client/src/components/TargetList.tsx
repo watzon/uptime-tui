@@ -1,13 +1,18 @@
 import { Box, Text } from 'ink'
+import { log } from '../lib/logger'
 import { useAppStore } from '../stores/app'
 import { TargetRow } from './TargetRow'
-import { log } from '../lib/logger'
 
 export function TargetList() {
 	const targets = useAppStore((state) => state.targets)
 	const selectedTargetId = useAppStore((state) => state.selectedTargetId)
 
-	log('TargetList render, targets:', targets.length, 'first target status:', targets[0]?.currentStatus)
+	log(
+		'TargetList render, targets:',
+		targets.length,
+		'first target status:',
+		targets[0]?.currentStatus,
+	)
 
 	if (targets.length === 0) {
 		return (
@@ -21,7 +26,11 @@ export function TargetList() {
 	return (
 		<Box flexDirection="column">
 			{targets.map((target) => (
-				<TargetRow key={target.id} target={target} isSelected={target.id === selectedTargetId} />
+				<TargetRow
+					key={target.id}
+					target={target}
+					isSelected={target.id === selectedTargetId}
+				/>
 			))}
 		</Box>
 	)

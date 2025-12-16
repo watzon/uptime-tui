@@ -1,4 +1,4 @@
-import type { TargetType } from '@downtime/shared'
+import type { TargetType } from '@uptime-tui/shared'
 import { DnsMonitor } from './dns'
 import { DockerMonitor } from './docker'
 import { HttpMonitor } from './http'

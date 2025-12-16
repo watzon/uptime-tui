@@ -1,5 +1,5 @@
+import type { Metric, TargetStatus } from '@uptime-tui/shared'
 import { Box, Text } from 'ink'
-import type { Metric, TargetStatus } from '@downtime/shared'
 
 interface UptimeChartProps {
 	metrics: Metric[]
@@ -40,7 +40,12 @@ function getResponseTimeColor(ms: number): string {
 	return 'green'
 }
 
-export function UptimeChart({ metrics, width = 40, height = 6, loading = false }: UptimeChartProps) {
+export function UptimeChart({
+	metrics,
+	width = 40,
+	height = 6,
+	loading = false,
+}: UptimeChartProps) {
 	if (loading) {
 		return (
 			<Box flexDirection="column">
@@ -90,7 +95,10 @@ export function UptimeChart({ metrics, width = 40, height = 6, loading = false }
 			const barHeight = normalizedHeights[i] ?? 0
 			if (barHeight >= row) {
 				// This cell should be filled
-				const color = m.responseTimeMs !== null ? getResponseTimeColor(m.responseTimeMs) : 'gray'
+				const color =
+					m.responseTimeMs !== null
+						? getResponseTimeColor(m.responseTimeMs)
+						: 'gray'
 				// Use half block for the top of the bar if it's the exact height
 				const char = barHeight === row && row < height ? '▄' : '█'
 				return (
@@ -108,17 +116,16 @@ export function UptimeChart({ metrics, width = 40, height = 6, loading = false }
 			}
 		})
 
-		chartRows.push(
-			<Box key={row}>
-				{rowChars}
-			</Box>
-		)
+		chartRows.push(<Box key={row}>{rowChars}</Box>)
 	}
 
 	// Calculate stats
-	const avgTime = responseTimes.length > 0
-		? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
-		: null
+	const avgTime =
+		responseTimes.length > 0
+			? Math.round(
+					responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length,
+				)
+			: null
 
 	const upCount = recentMetrics.filter((m) => m.status === 'up').length
 	const uptimePercent = ((upCount / recentMetrics.length) * 100).toFixed(1)
@@ -126,9 +133,8 @@ export function UptimeChart({ metrics, width = 40, height = 6, loading = false }
 	// Time range label
 	const firstTime = recentMetrics[0]?.time
 	const lastTime = recentMetrics[recentMetrics.length - 1]?.time
-	const timeLabel = firstTime && lastTime
-		? `${formatTimeAgo(new Date(firstTime))} → now`
-		: ''
+	const timeLabel =
+		firstTime && lastTime ? `${formatTimeAgo(new Date(firstTime))} → now` : ''
 
 	return (
 		<Box flexDirection="column">
@@ -141,15 +147,16 @@ export function UptimeChart({ metrics, width = 40, height = 6, loading = false }
 			<Box marginTop={1} marginBottom={0}>
 				<Text bold>Response Time </Text>
 				<Text dimColor>
-					({minTime}ms - {maxTime}ms{avgTime !== null ? `, avg ${avgTime}ms` : ''})
+					({minTime}ms - {maxTime}ms
+					{avgTime !== null ? `, avg ${avgTime}ms` : ''})
 				</Text>
 			</Box>
-			<Box flexDirection="column">
-				{chartRows}
-			</Box>
+			<Box flexDirection="column">{chartRows}</Box>
 
 			<Box marginTop={1}>
-				<Text dimColor>{timeLabel} • {recentMetrics.length} checks</Text>
+				<Text dimColor>
+					{timeLabel} • {recentMetrics.length} checks
+				</Text>
 			</Box>
 		</Box>
 	)

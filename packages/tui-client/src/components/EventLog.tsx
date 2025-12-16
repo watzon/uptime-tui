@@ -1,5 +1,5 @@
+import { EVENT_TYPE_LABELS } from '@uptime-tui/shared'
 import { Box, Text } from 'ink'
-import { EVENT_TYPE_LABELS } from '@downtime/shared'
 import { useAppStore } from '../stores/app'
 
 export function EventLog() {
@@ -20,7 +20,12 @@ export function EventLog() {
 				const targetName = target?.name ?? 'Unknown'
 				const timestamp = new Date(event.createdAt).toLocaleTimeString()
 				const label = EVENT_TYPE_LABELS[event.type]
-				const color = event.type === 'up' ? 'green' : event.type === 'down' ? 'red' : 'yellow'
+				const color =
+					event.type === 'up'
+						? 'green'
+						: event.type === 'down'
+							? 'red'
+							: 'yellow'
 
 				return (
 					<Box key={event.id}>

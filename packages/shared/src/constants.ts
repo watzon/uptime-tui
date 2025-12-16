@@ -25,6 +25,12 @@ export const STATUS_ICONS = {
 export const EVENT_TYPE_LABELS = {
 	up: 'Went UP',
 	down: 'Went DOWN',
+	degraded: 'Degraded',
+	timeout: 'Timed Out',
+	error: 'Error',
+	paused: 'Paused',
+	resumed: 'Resumed',
+	certificate_expiring: 'Cert Expiring',
 	created: 'Created',
 	updated: 'Updated',
 	deleted: 'Deleted',

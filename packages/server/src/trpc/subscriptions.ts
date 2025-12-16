@@ -1,7 +1,11 @@
-import type { Event, Metric, TargetStatus } from '@downtime/shared'
+import type { Event } from '@uptime-tui/shared'
 import { observable } from '@trpc/server/observable'
 import { z } from 'zod'
-import { schedulerEvents, type MetricRecordedEvent, type StatusChangeEvent } from '../scheduler'
+import {
+	type MetricRecordedEvent,
+	type StatusChangeEvent,
+	schedulerEvents,
+} from '../scheduler'
 import { protectedProcedure, router } from './trpc'
 
 export const subscriptionsRouter = router({
@@ -11,7 +15,11 @@ export const subscriptionsRouter = router({
 			console.log('Client subscribed to onStatusChange')
 			return observable<StatusChangeEvent>((emit) => {
 				const handler = (event: StatusChangeEvent) => {
-					console.log('Emitting status change to client:', event.target.name, event.newStatus)
+					console.log(
+						'Emitting status change to client:',
+						event.target.name,
+						event.newStatus,
+					)
 					if (!input?.targetId || event.target.id === input.targetId) {
 						emit.next(event)
 					}
@@ -32,7 +40,11 @@ export const subscriptionsRouter = router({
 			console.log('Client subscribed to onMetric')
 			return observable<MetricRecordedEvent>((emit) => {
 				const handler = (event: MetricRecordedEvent) => {
-					console.log('Emitting metric to client:', event.target.name, event.metric.status)
+					console.log(
+						'Emitting metric to client:',
+						event.target.name,
+						event.metric.status,
+					)
 					if (!input?.targetId || event.target.id === input.targetId) {
 						emit.next(event)
 					}

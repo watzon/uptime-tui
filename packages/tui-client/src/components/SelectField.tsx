@@ -14,25 +14,35 @@ interface SelectFieldProps {
 	isFocused: boolean
 }
 
-export function SelectField({ label, value, options, onChange, onSubmit, isFocused }: SelectFieldProps) {
+export function SelectField({
+	label,
+	value,
+	options,
+	onChange,
+	onSubmit,
+	isFocused,
+}: SelectFieldProps) {
 	const currentIndex = options.findIndex((opt) => opt.value === value)
-	const currentLabel = options.find((opt) => opt.value === value)?.label ?? value
+	const currentLabel =
+		options.find((opt) => opt.value === value)?.label ?? value
 
 	useInput(
 		(input, key) => {
 			if (!isFocused) return
 
 			if (key.leftArrow || input === 'h') {
-				const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1
+				const prevIndex =
+					currentIndex > 0 ? currentIndex - 1 : options.length - 1
 				onChange(options[prevIndex]!.value)
 			} else if (key.rightArrow || input === 'l') {
-				const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0
+				const nextIndex =
+					currentIndex < options.length - 1 ? currentIndex + 1 : 0
 				onChange(options[nextIndex]!.value)
 			} else if (key.return) {
 				onSubmit?.()
 			}
 		},
-		{ isActive: isFocused }
+		{ isActive: isFocused },
 	)
 
 	return (

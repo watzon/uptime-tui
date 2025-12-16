@@ -1,7 +1,7 @@
+import type { TargetWithStatus } from '@uptime-tui/shared'
 import { Box, Text } from 'ink'
-import type { TargetWithStatus } from '@downtime/shared'
-import { StatusIndicator } from './StatusIndicator'
 import { log } from '../lib/logger'
+import { StatusIndicator } from './StatusIndicator'
 
 interface TargetRowProps {
 	target: TargetWithStatus
@@ -9,9 +9,19 @@ interface TargetRowProps {
 }
 
 export function TargetRow({ target, isSelected }: TargetRowProps) {
-	const responseTime = target.lastResponseTimeMs !== null ? `${target.lastResponseTimeMs}ms` : '---'
+	const responseTime =
+		target.lastResponseTimeMs !== null
+			? `${target.lastResponseTimeMs}ms`
+			: '---'
 
-	log('TargetRow render:', target.name, 'responseTime:', responseTime, 'status:', target.currentStatus)
+	log(
+		'TargetRow render:',
+		target.name,
+		'responseTime:',
+		responseTime,
+		'status:',
+		target.currentStatus,
+	)
 
 	return (
 		<Box>

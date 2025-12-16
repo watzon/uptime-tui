@@ -6,6 +6,10 @@ import { scheduler } from './scheduler'
 import { createContext } from './trpc/context'
 import { appRouter } from './trpc/router'
 import { startWebhookDispatcher } from './webhooks/dispatcher'
+import {
+	startRetryScheduler,
+	stopRetryScheduler,
+} from './webhooks/retry-scheduler'
 
 const httpServer = createHTTPServer({
 	router: appRouter,
@@ -30,6 +34,7 @@ process.on('SIGTERM', () => {
 	wssHandler.broadcastReconnectNotification()
 	wss.close()
 	scheduler.stop()
+	stopRetryScheduler()
 	process.exit(0)
 })
 
@@ -38,6 +43,7 @@ process.on('SIGINT', () => {
 	wssHandler.broadcastReconnectNotification()
 	wss.close()
 	scheduler.stop()
+	stopRetryScheduler()
 	process.exit(0)
 })
 
@@ -47,6 +53,7 @@ async function main() {
 	console.log(`WebSocket server listening on port ${env.WS_PORT}`)
 
 	startWebhookDispatcher()
+	startRetryScheduler()
 	await scheduler.start()
 }
 

@@ -6,13 +6,13 @@ Set up GitHub Actions for CI/CD to publish all packages to npm, Docker image to 
 
 ## Package Structure
 
-**npm org:** `@downtime-tui`
+**npm org:** `@uptime-tui`
 
 | Package | npm Name | Description | Binary |
 |---------|----------|-------------|--------|
-| shared | `@downtime-tui/shared` | Zod schemas, types | - |
-| server | `@downtime-tui/server` | Monitoring server | `downtime-server` |
-| tui-client | `@downtime-tui/cli` | TUI client | `downtime` |
+| shared | `@uptime-tui/shared` | Zod schemas, types | - |
+| server | `@uptime-tui/server` | Monitoring server | `uptime-server` |
+| tui-client | `@uptime-tui/cli` | TUI client | `downtime` |
 
 ## CI Workflow
 
@@ -39,11 +39,11 @@ Set up GitHub Actions for CI/CD to publish all packages to npm, Docker image to 
 
 2. **publish-docker**
    - Build Docker image for server
-   - Push to `ghcr.io/watzon/downtime-server:latest` and `ghcr.io/watzon/downtime-server:vX.X.X`
+   - Push to `ghcr.io/watzon/uptime-server:latest` and `ghcr.io/watzon/uptime-server:vX.X.X`
 
 3. **build-executables** (matrix)
    - Platforms: linux-x64, linux-arm64, darwin-x64, darwin-arm64, windows-x64
-   - Builds both `downtime-server` and `downtime` (CLI) per platform
+   - Builds both `uptime-server` and `downtime` (CLI) per platform
    - 10 total artifacts
 
 4. **create-release**
@@ -61,7 +61,7 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/server/package.json ./packages/server/
 RUN bun install --frozen-lockfile
 COPY . .
-RUN bun run build --filter=@downtime-tui/server
+RUN bun run build --filter=@uptime-tui/server
 
 FROM oven/bun:1-slim
 WORKDIR /app
@@ -74,23 +74,23 @@ CMD ["bun", "run", "dist/index.js"]
 ## Package.json Changes
 
 **packages/shared/package.json:**
-- `name`: `@downtime-tui/shared`
+- `name`: `@uptime-tui/shared`
 - `private`: `false`
 - Add `files: ["dist"]`
 
 **packages/server/package.json:**
-- `name`: `@downtime-tui/server`
+- `name`: `@uptime-tui/server`
 - `private`: `false`
-- Add `bin: { "downtime-server": "./dist/index.js" }`
+- Add `bin: { "uptime-server": "./dist/index.js" }`
 - Add `files: ["dist"]`
-- Change `@downtime/shared` to `@downtime-tui/shared`
+- Change `@downtime/shared` to `@uptime-tui/shared`
 
 **packages/tui-client/package.json:**
-- `name`: `@downtime-tui/cli`
+- `name`: `@uptime-tui/cli`
 - `private`: `false`
 - Add `bin: { "downtime": "./dist/index.js" }`
 - Add `files: ["dist"]`
-- Change workspace deps to `@downtime-tui/*`
+- Change workspace deps to `@uptime-tui/*`
 
 ## GitHub Secrets Required
 
@@ -100,13 +100,13 @@ CMD ["bun", "run", "dist/index.js"]
 
 ```bash
 # Run server via npm
-npx @downtime-tui/server
+npx @uptime-tui/server
 
 # Run CLI via npm
-npx @downtime-tui/cli
+npx @uptime-tui/cli
 
 # Run server via Docker
-docker run -p 3000:3000 -p 3001:3001 ghcr.io/watzon/downtime-server
+docker run -p 3000:3000 -p 3001:3001 ghcr.io/watzon/uptime-server
 
 # Download standalone executables from GitHub Releases
 ```

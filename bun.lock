@@ -14,11 +14,14 @@
       },
     },
     "packages/server": {
-      "name": "@downtime/server",
+      "name": "@uptime-tui/server",
       "version": "0.0.1",
+      "bin": {
+        "uptime-server": "./dist/index.js",
+      },
       "dependencies": {
-        "@downtime/shared": "workspace:*",
         "@trpc/server": "^11.0.0-rc.682",
+        "@uptime-tui/shared": "workspace:*",
         "dockerode": "^4.0.9",
         "drizzle-orm": "^0.38.2",
         "ping": "^1.0.0",
@@ -36,7 +39,7 @@
       },
     },
     "packages/shared": {
-      "name": "@downtime/shared",
+      "name": "@uptime-tui/shared",
       "version": "0.0.1",
       "dependencies": {
         "zod": "^3.24.1",
@@ -46,15 +49,15 @@
       },
     },
     "packages/tui-client": {
-      "name": "@downtime/tui-client",
+      "name": "@uptime-tui/cli",
       "version": "0.0.1",
       "bin": {
-        "downtime": "./dist/index.js",
+        "uptime": "./dist/index.js",
       },
       "dependencies": {
-        "@downtime/server": "workspace:*",
-        "@downtime/shared": "workspace:*",
         "@trpc/client": "^11.0.0-rc.682",
+        "@uptime-tui/server": "workspace:*",
+        "@uptime-tui/shared": "workspace:*",
         "asciichart": "^1.5.25",
         "ink": "^5.1.0",
         "ink-spinner": "^5.0.0",
@@ -96,12 +99,6 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@1.9.4", "", { "os": "win32", "cpu": "arm64" }, "sha512-tlbhLk+WXZmgwoIKwHIHEBZUwxml7bRJgk0X2sPyNR3S93cdRq6XulAZRQJ17FYGGzWne0fgrXBKpl7l4M87Hg=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@1.9.4", "", { "os": "win32", "cpu": "x64" }, "sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA=="],
-
-    "@downtime/server": ["@downtime/server@workspace:packages/server"],
-
-    "@downtime/shared": ["@downtime/shared@workspace:packages/shared"],
-
-    "@downtime/tui-client": ["@downtime/tui-client@workspace:packages/tui-client"],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
 
@@ -206,6 +203,12 @@
     "@types/ssh2": ["@types/ssh2@1.15.5", "", { "dependencies": { "@types/node": "^18.11.18" } }, "sha512-N1ASjp/nXH3ovBHddRJpli4ozpk6UdDYIX4RJWFa9L1YKnzdhTlVmiGHm4DZnj/jLbqZpes4aeR30EFGQtvhQQ=="],
 
     "@types/ws": ["@types/ws@8.18.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg=="],
+
+    "@uptime-tui/cli": ["@uptime-tui/cli@workspace:packages/tui-client"],
+
+    "@uptime-tui/server": ["@uptime-tui/server@workspace:packages/server"],
+
+    "@uptime-tui/shared": ["@uptime-tui/shared@workspace:packages/shared"],
 
     "ansi-escapes": ["ansi-escapes@7.2.0", "", { "dependencies": { "environment": "^1.0.0" } }, "sha512-g6LhBsl+GBPRWGWsBtutpzBYuIIdBkLEvad5C/va/74Db018+5TZiyA26cZJAr3Rft5lprVqOIPxf5Vid6tqAw=="],
 
