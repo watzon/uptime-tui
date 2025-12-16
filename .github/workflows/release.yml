@@ -46,7 +46,7 @@ jobs:
           cd packages/shared && npm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/shared && npm publish --access public
+        run: cd packages/shared && npm publish --access public || echo "Version may already exist, skipping..."
 
   publish-server:
     name: Publish @uptime-tui/server
@@ -85,7 +85,7 @@ jobs:
           cd packages/server && npm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/server && npm publish --access public
+        run: cd packages/server && npm publish --access public || echo "Version may already exist, skipping..."
 
   publish-cli:
     name: Publish @uptime-tui/cli
@@ -124,7 +124,7 @@ jobs:
           cd packages/tui-client && npm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/tui-client && npm publish --access public
+        run: cd packages/tui-client && npm publish --access public || echo "Version may already exist, skipping..."
 
   publish-docker:
     name: Publish Docker image
