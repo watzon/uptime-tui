@@ -204,22 +204,13 @@ jobs:
             os: ubuntu-latest
             binary: cli
             artifact: uptime-linux-arm64
-          # macOS x64
-          - target: bun-darwin-x64
-            os: macos-13
-            binary: server
-            artifact: uptime-server-darwin-x64
-          - target: bun-darwin-x64
-            os: macos-13
-            binary: cli
-            artifact: uptime-darwin-x64
-          # macOS ARM64
+          # macOS ARM64 (Apple Silicon)
           - target: bun-darwin-arm64
-            os: macos-14
+            os: macos-15
             binary: server
             artifact: uptime-server-darwin-arm64
           - target: bun-darwin-arm64
-            os: macos-14
+            os: macos-15
             binary: cli
             artifact: uptime-darwin-arm64
           # Windows x64
@@ -239,6 +230,9 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
 
       - name: Build server executable
         if: matrix.binary == 'server'
