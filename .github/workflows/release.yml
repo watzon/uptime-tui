@@ -68,7 +68,7 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/shared && pnpm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/shared && npm pkg set version=$VERSION
 
       - name: Publish
         run: pnpm --filter @uptime-tui/shared publish --access public --no-git-checks || echo "Version may already exist, skipping..."
@@ -103,7 +103,7 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/server && pnpm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/server && npm pkg set version=$VERSION
 
       - name: Publish
         run: pnpm --filter @uptime-tui/server publish --access public --no-git-checks || echo "Version may already exist, skipping..."
@@ -138,7 +138,7 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/tui-client && pnpm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/tui-client && npm pkg set version=$VERSION
 
       - name: Publish
         run: pnpm --filter @uptime-tui/cli publish --access public --no-git-checks || echo "Version may already exist, skipping..."
