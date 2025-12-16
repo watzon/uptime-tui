@@ -59,9 +59,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Update npm
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -71,10 +68,10 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/shared && npm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/shared && pnpm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/shared && npm publish --access public || echo "Version may already exist, skipping..."
+        run: pnpm --filter @uptime-tui/shared publish --access public --no-git-checks || echo "Version may already exist, skipping..."
 
   publish-server:
     name: Publish @uptime-tui/server
@@ -97,9 +94,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Update npm
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -109,10 +103,10 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/server && npm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/server && pnpm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/server && npm publish --access public || echo "Version may already exist, skipping..."
+        run: pnpm --filter @uptime-tui/server publish --access public --no-git-checks || echo "Version may already exist, skipping..."
 
   publish-cli:
     name: Publish @uptime-tui/cli
@@ -135,9 +129,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Update npm
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -147,10 +138,10 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          cd packages/tui-client && npm version $VERSION --no-git-tag-version --allow-same-version
+          cd packages/tui-client && pnpm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Publish
-        run: cd packages/tui-client && npm publish --access public || echo "Version may already exist, skipping..."
+        run: pnpm --filter @uptime-tui/cli publish --access public --no-git-checks || echo "Version may already exist, skipping..."
 
   publish-docker:
     name: Publish Docker image
