@@ -1,6 +1,6 @@
 {
 	"name": "@uptime-tui/shared",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"private": false,
 	"type": "module",
 	"repository": {
@@ -22,7 +22,9 @@
 			}
 		}
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "bun build src/index.ts --outdir dist --target bun && tsc --emitDeclarationOnly --outDir dist",
 		"typecheck": "tsc --noEmit"
