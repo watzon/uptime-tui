@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 import { render } from 'ink'
 import { App } from './App'
 import { SetupWizard } from './components/SetupWizard'
