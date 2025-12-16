@@ -141,7 +141,7 @@ export function AddTargetForm() {
 		}
 
 		const intervalNum = Number.parseInt(interval, 10)
-		if (isNaN(intervalNum) || intervalNum < 5 || intervalNum > 3600) {
+		if (Number.isNaN(intervalNum) || intervalNum < 5 || intervalNum > 3600) {
 			newErrors.interval = 'Must be between 5 and 3600 seconds'
 		}
 
@@ -154,13 +154,14 @@ export function AddTargetForm() {
 					newErrors.url = 'Please enter a valid URL'
 				}
 				break
-			case 'tcp':
+			case 'tcp': {
 				if (!host.trim()) newErrors.host = 'Host is required'
 				const portNum = Number.parseInt(port, 10)
-				if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+				if (Number.isNaN(portNum) || portNum < 1 || portNum > 65535) {
 					newErrors.port = 'Port must be between 1 and 65535'
 				}
 				break
+			}
 			case 'icmp':
 				if (!icmpHost.trim()) newErrors.icmpHost = 'Host is required'
 				break

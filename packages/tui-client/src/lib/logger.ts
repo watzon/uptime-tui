@@ -1,5 +1,5 @@
-import { appendFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { appendFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 const DEBUG_ENABLED = process.argv.includes('--debug')
 const logFile = join(process.cwd(), 'tui-debug.log')

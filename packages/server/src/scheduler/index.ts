@@ -45,7 +45,7 @@ export class Scheduler {
 		if (!this.running) return
 
 		console.log('Stopping scheduler...')
-		for (const [id, interval] of this.intervals) {
+		for (const [_id, interval] of this.intervals) {
 			clearInterval(interval)
 		}
 		this.intervals.clear()

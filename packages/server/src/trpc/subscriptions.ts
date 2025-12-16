@@ -1,5 +1,5 @@
-import type { Event } from '@uptime-tui/shared'
 import { observable } from '@trpc/server/observable'
+import type { Event } from '@uptime-tui/shared'
 import { z } from 'zod'
 import {
 	type MetricRecordedEvent,

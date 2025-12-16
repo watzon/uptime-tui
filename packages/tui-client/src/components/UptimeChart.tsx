@@ -75,8 +75,8 @@ export function UptimeChart({
 	const range = maxTime - minTime || 1
 
 	// Build status timeline
-	const statusLine = recentMetrics.map((m, i) => (
-		<Text key={i} color={getStatusColor(m.status)}>
+	const statusLine = recentMetrics.map((m) => (
+		<Text key={m.time.toString()} color={getStatusColor(m.status)}>
 			{getStatusChar(m.status)}
 		</Text>
 	))
@@ -93,6 +93,7 @@ export function UptimeChart({
 	for (let row = height; row >= 1; row--) {
 		const rowChars = recentMetrics.map((m, i) => {
 			const barHeight = normalizedHeights[i] ?? 0
+			const cellKey = `${row}-${m.time.toString()}`
 			if (barHeight >= row) {
 				// This cell should be filled
 				const color =
@@ -102,18 +103,17 @@ export function UptimeChart({
 				// Use half block for the top of the bar if it's the exact height
 				const char = barHeight === row && row < height ? '▄' : '█'
 				return (
-					<Text key={i} color={color}>
+					<Text key={cellKey} color={color}>
 						{char}
 					</Text>
 				)
-			} else {
-				// Empty cell
-				return (
-					<Text key={i} dimColor>
-						{' '}
-					</Text>
-				)
 			}
+			// Empty cell
+			return (
+				<Text key={cellKey} dimColor>
+					{' '}
+				</Text>
+			)
 		})
 
 		chartRows.push(<Box key={row}>{rowChars}</Box>)

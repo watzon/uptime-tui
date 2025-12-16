@@ -27,10 +27,12 @@ export function useKeyboard() {
 		if (input === '1') {
 			setActiveTab('targets')
 			return
-		} else if (input === '2') {
+		}
+		if (input === '2') {
 			setActiveTab('webhooks')
 			return
-		} else if (key.tab) {
+		}
+		if (key.tab) {
 			setActiveTab(activeTab === 'targets' ? 'webhooks' : 'targets')
 			return
 		}

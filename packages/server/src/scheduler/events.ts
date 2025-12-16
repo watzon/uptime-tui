@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import type { Event, Metric, Target, TargetStatus } from '@uptime-tui/shared'
 
 export interface StatusChangeEvent {

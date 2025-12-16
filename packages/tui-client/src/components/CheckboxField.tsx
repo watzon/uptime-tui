@@ -24,7 +24,7 @@ export function CheckboxField({
 	focusedIndex,
 	error,
 }: CheckboxFieldProps) {
-	const toggle = (value: string) => {
+	const _toggle = (value: string) => {
 		if (selected.includes(value)) {
 			onChange(selected.filter((v) => v !== value))
 		} else {

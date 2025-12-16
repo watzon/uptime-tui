@@ -24,7 +24,8 @@ function DeliveryStatusIndicator({ statuses }: { statuses: string[] }) {
 		<Box>
 			{statuses.map((status, i) => (
 				<Text
-					key={i}
+					// biome-ignore lint/suspicious/noArrayIndexKey: Index needed for duplicate statuses
+					key={`${status}-${i}`}
 					color={
 						status === 'success'
 							? 'green'

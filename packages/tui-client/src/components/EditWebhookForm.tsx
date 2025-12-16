@@ -121,12 +121,14 @@ export function EditWebhookForm() {
 			if (key.leftArrow) {
 				setCheckboxFocusIndex(Math.max(0, checkboxFocusIndex - 1))
 				return
-			} else if (key.rightArrow) {
+			}
+			if (key.rightArrow) {
 				setCheckboxFocusIndex(
 					Math.min(EVENT_OPTIONS.length - 1, checkboxFocusIndex + 1),
 				)
 				return
-			} else if (input === ' ') {
+			}
+			if (input === ' ') {
 				setEvents(toggleCheckbox(EVENT_OPTIONS, events, checkboxFocusIndex))
 				return
 			}

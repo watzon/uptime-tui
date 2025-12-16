@@ -1,4 +1,4 @@
-import { Socket } from 'net'
+import { Socket } from 'node:net'
 import type { MonitorResult, TcpConfig } from '@uptime-tui/shared'
 import type { Monitor } from './types'
 

@@ -48,7 +48,7 @@ export function useSubscriptions() {
 					'Received metric:',
 					data.target.name,
 					data.metric.status,
-					data.metric.responseTimeMs + 'ms',
+					`${data.metric.responseTimeMs}ms`,
 				)
 				const {
 					targets,

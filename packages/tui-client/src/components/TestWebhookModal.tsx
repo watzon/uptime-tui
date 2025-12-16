@@ -39,7 +39,7 @@ export function TestWebhookModal() {
 		runTest()
 	}, [webhook])
 
-	useInput((input, key) => {
+	useInput((_input, key) => {
 		if (key.escape || key.return) {
 			setView('dashboard')
 		}

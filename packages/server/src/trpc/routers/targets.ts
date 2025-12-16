@@ -71,7 +71,7 @@ export const targetsRouter = router({
 				})
 				.returning()
 
-			if (newTarget && newTarget.enabled) {
+			if (newTarget?.enabled) {
 				scheduler.scheduleTarget(newTarget as Target)
 			}
 

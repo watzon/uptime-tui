@@ -25,7 +25,7 @@ function calculateNextRetryAt(attempts: number): Date | null {
 }
 
 async function attemptDelivery(
-	deliveryId: string,
+	_deliveryId: string,
 	webhookUrl: string,
 	payload: WebhookPayload,
 ): Promise<{
